@@ -2,7 +2,7 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <div class="formContainer">
+    <div class="container">
 
       <h1>Registrar Denúncia</h1>
 

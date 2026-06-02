@@ -2,7 +2,7 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <div class="dashboardContainer">
+    <div class="container">
 
       <h1>Minhas Denúncias</h1>
 

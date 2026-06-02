@@ -1,12 +1,10 @@
 export default () => {
-  const containerLogin = document.createElement('div');
+  const containerLogin = document.createElement("div");
 
   const templateLogin = `
-    <form class="logContainer">
+    <form class="container">
 
-      <p class="loginParagraph">
-        Entre na sua conta
-      </p>
+      <h2> Entre na sua conta </h2>
 
       <input
         type="email"
@@ -47,37 +45,28 @@ export default () => {
 
   containerLogin.innerHTML = templateLogin;
 
-  const loginEmail =
-    containerLogin.querySelector('#inputEmail');
+  const loginEmail = containerLogin.querySelector("#inputEmail");
 
-  const loginSenha =
-    containerLogin.querySelector('#inputSenha');
+  const loginSenha = containerLogin.querySelector("#inputSenha");
 
-  const btnEntrar =
-    containerLogin.querySelector('#btn-Entrar');
+  const btnEntrar = containerLogin.querySelector("#btn-Entrar");
 
-  const msgAlert =
-    containerLogin.querySelector('#message');
+  const msgAlert = containerLogin.querySelector("#message");
 
-  btnEntrar.addEventListener('click', async (e) => {
-
+  btnEntrar.addEventListener("click", async (e) => {
     e.preventDefault();
 
     try {
-
-      const response = await fetch(
-        'http://localhost:5000/api/auth/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: loginEmail.value,
-            senha: loginSenha.value,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginEmail.value,
+          senha: loginSenha.value,
+        }),
+      });
 
       const data = await response.json();
 
@@ -85,20 +74,12 @@ export default () => {
         throw new Error(data.erro);
       }
 
-      localStorage.setItem(
-        'token',
-        data.token
-      );
+      localStorage.setItem("token", data.token);
 
-      localStorage.setItem(
-        'usuario',
-        JSON.stringify(data.usuario)
-      );
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      window.location.hash = '#dashboard';
-
+      window.location.hash = "#dashboard";
     } catch (error) {
-
       msgAlert.innerHTML = error.message;
     }
   });

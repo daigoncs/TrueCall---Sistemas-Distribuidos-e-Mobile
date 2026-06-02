@@ -2,29 +2,34 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <form class="logContainer">
+  
+    <form class="container">
 
       <h2>Criar Conta</h2>
 
       <input
         type="text"
         id="nome"
+        class="input Nome"
         placeholder="Nome"
       >
 
       <input
         type="email"
         id="email"
+        class="input Email"
         placeholder="Email"
       >
 
       <input
         type="password"
         id="senha"
+        class="input Senha"
         placeholder="Senha"
       >
 
-      <button id="btnCadastrar">
+      <button id="btnCadastrar"
+      class="btn cadastrar">
         Cadastrar
       </button>
 
