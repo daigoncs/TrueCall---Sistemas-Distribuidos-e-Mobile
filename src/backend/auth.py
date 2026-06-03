@@ -5,7 +5,7 @@ import jwt
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from src.db import get_db
+from src.backend.db import get_db
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 

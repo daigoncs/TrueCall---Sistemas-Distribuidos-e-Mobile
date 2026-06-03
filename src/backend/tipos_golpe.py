@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from src.db import get_db
+from src.backend.db import get_db
 
 tipos_golpe_bp = Blueprint("tipos_golpe", __name__, url_prefix="/api/tipos-golpe")
 
