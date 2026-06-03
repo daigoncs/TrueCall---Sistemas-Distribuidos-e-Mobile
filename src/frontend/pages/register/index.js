@@ -5,6 +5,11 @@ export default () => {
   
     <form class="container">
 
+        <div class="form-switch">
+        <a href="#login">Entrar</a>
+        <a href="#register" class="active">Criar conta</a>
+      </div>
+
       <h2>Criar Conta</h2>
 
       <input

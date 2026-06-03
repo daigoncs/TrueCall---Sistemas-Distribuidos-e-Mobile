@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
-from src.db import get_db
-from src.auth import token_obrigatorio
+from src.backend.db import get_db
+from src.backend.auth import token_obrigatorio
 
 denuncias_bp = Blueprint("denuncias", __name__, url_prefix="/api/denuncias")
 

@@ -3,11 +3,11 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
-from src.db import close_db, init_db
-from src.auth import auth_bp
-from src.denuncias import denuncias_bp
-from src.instituicoes import instituicoes_bp
-from src.tipos_golpe import tipos_golpe_bp
+from src.backend.db import close_db, init_db
+from src.backend.auth import auth_bp
+from src.backend.denuncias import denuncias_bp
+from src.backend.instituicoes import instituicoes_bp
+from src.backend.tipos_golpe import tipos_golpe_bp
 
 def create_app():
     app = Flask(__name__)
@@ -18,10 +18,10 @@ def create_app():
 
     CORS(app)
 
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(denuncias_bp)
-    app.register_blueprint(instituicoes_bp)
-    app.register_blueprint(tipos_golpe_bp)
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(denuncias_bp, url_prefix="/api/denuncias")
+    app.register_blueprint(instituicoes_bp, url_prefix="/api/instituicoes")
+    app.register_blueprint(tipos_golpe_bp, url_prefix="/api/tipos-golpe")
 
     app.teardown_appcontext(close_db)
 

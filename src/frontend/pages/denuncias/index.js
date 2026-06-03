@@ -2,106 +2,121 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <div class="container">
+    <div class="denuncia-page">
 
-      <h1>Registrar Denúncia</h1>
+      <nav class="topbar">
+        <span class="topbar-brand">True<span>Call</span></span>
+      </nav>
 
-      <input
-        id="telefone"
-        placeholder="Telefone"
-      >
+      <main class="denuncia-main">
 
-      <textarea
-        id="descricao"
-        placeholder="Descrição"
-      ></textarea>
+        <div class="denuncia-header">
+          <button id="btnVoltar" class="btn-voltar">←</button>
+          <h1>Registrar denúncia</h1>
+        </div>
 
-      <select id="instituicao"></select>
+        <div class="denuncia-card">
 
-      <input
-        id="instituicaoPersonalizada"
-        placeholder="Instituição personalizada"
-      >
+          <label for="telefone">Telefone suspeito</label>
+          <input
+            id="telefone"
+            class="input"
+            placeholder="+55 11 99999-9999"
+          />
 
-      <select id="tipoGolpe"></select>
+          <div class="input-row">
+            <div>
+              <label for="instituicao">Instituição</label>
+              <div class="select-wrapper">
+                <select id="instituicao"></select>
+              </div>
+            </div>
+            <div>
+              <label for="tipoGolpe">Tipo de golpe</label>
+              <div class="select-wrapper">
+                <select id="tipoGolpe"></select>
+              </div>
+            </div>
+          </div>
 
-      <button id="btnSalvar">
-        Registrar
-      </button>
+          <div id="wrapperPersonalizada" style="display: none;">
+            <label for="instituicaoPersonalizada">Qual instituição?</label>
+            <input
+              id="instituicaoPersonalizada"
+              class="input"
+              placeholder="Ex: Banco XYZ"
+            />
+          </div>
 
-      <button id="btnVoltar">
-        Voltar
-      </button>
+          <label for="descricao">Descrição</label>
+          <textarea
+            id="descricao"
+            placeholder="Descreva o que aconteceu na ligação..."
+          ></textarea>
 
-      <p id="message"></p>
+          <p id="message" class="denuncia-msg"></p>
 
+          <button id="btnSalvar" class="btn-registrar">
+            Registrar denúncia
+          </button>
+
+          <button id="btnVoltar2" class="btn-cancelar">
+            Cancelar
+          </button>
+
+        </div>
+      </main>
     </div>
   `;
 
   const token = localStorage.getItem("token");
-
   const msg = container.querySelector("#message");
+  const selInst = container.querySelector("#instituicao");
+
+  // Mostra campo personalizada quando "Outro" for selecionado
+  selInst.addEventListener("change", () => {
+    const isOutro =
+      selInst.options[selInst.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperPersonalizada").style.display = isOutro
+      ? "block"
+      : "none";
+  });
 
   async function carregarInstituicoes() {
     const response = await fetch("http://localhost:5000/api/instituicoes");
-
     const dados = await response.json();
-
-    const select = container.querySelector("#instituicao");
-
-    select.innerHTML = "";
-
-    dados.forEach((inst) => {
-      select.innerHTML += `
-        <option value="${inst.id}">
-          ${inst.nome}
-        </option>
-      `;
-    });
+    selInst.innerHTML =
+      `<option value="">Selecionar...</option>` +
+      dados.map((i) => `<option value="${i.id}">${i.nome}</option>`).join("");
   }
 
   async function carregarTipos() {
     const response = await fetch("http://localhost:5000/api/tipos-golpe");
-
     const dados = await response.json();
-
-    const select = container.querySelector("#tipoGolpe");
-
-    select.innerHTML = "";
-
-    dados.forEach((tipo) => {
-      select.innerHTML += `
-        <option value="${tipo.id}">
-          ${tipo.nome}
-        </option>
-      `;
-    });
+    container.querySelector("#tipoGolpe").innerHTML =
+      `<option value="">Selecionar...</option>` +
+      dados.map((t) => `<option value="${t.id}">${t.nome}</option>`).join("");
   }
 
   carregarInstituicoes();
   carregarTipos();
 
-  const btnSalvar = container.querySelector("#btnSalvar");
+  container.querySelector("#btnSalvar").addEventListener("click", async () => {
+    msg.className = "denuncia-msg";
+    msg.innerHTML = "";
 
-  btnSalvar.addEventListener("click", async () => {
     try {
       const response = await fetch("http://localhost:5000/api/denuncias", {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-
         body: JSON.stringify({
           telefone: container.querySelector("#telefone").value,
-
           descricao: container.querySelector("#descricao").value,
-
           instituicao_id: container.querySelector("#instituicao").value,
-
           tipo_golpe_id: container.querySelector("#tipoGolpe").value,
-
           instituicao_personalizada: container.querySelector(
             "#instituicaoPersonalizada",
           ).value,
@@ -110,24 +125,25 @@ export default () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.erro);
-      }
+      if (!response.ok) throw new Error(data.erro);
 
-      msg.innerHTML = "Denúncia registrada com sucesso";
+      msg.className = "denuncia-msg success";
+      msg.innerHTML = "Denúncia registrada com sucesso!";
 
       setTimeout(() => {
         window.location.hash = "#dashboard";
       }, 1500);
     } catch (error) {
+      msg.className = "denuncia-msg error";
       msg.innerHTML = error.message;
     }
   });
 
-  const btnVoltar = container.querySelector("#btnVoltar");
-
-  btnVoltar.addEventListener("click", () => {
-    window.location.hash = "#dashboard";
+  // Dois botões de voltar (header e cancelar) fazem a mesma coisa
+  container.querySelectorAll("#btnVoltar, #btnVoltar2").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      window.location.hash = "#dashboard";
+    });
   });
 
   return container;

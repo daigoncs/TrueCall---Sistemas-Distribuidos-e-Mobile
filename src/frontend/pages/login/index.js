@@ -4,6 +4,11 @@ export default () => {
   const templateLogin = `
     <form class="container">
 
+        <div class="form-switch">
+      <a href="#login" class="active">Entrar</a>
+      <a href="#register">Criar conta</a>
+    </div>
+
       <h2> Entre na sua conta </h2>
 
       <input
@@ -24,6 +29,8 @@ export default () => {
 
       <br>
 
+          <a href="#forgot" class="forgot-link">Esqueci minha senha</a>
+
       <p id="message" class="successMessage menssage"></p>
 
       <br>
@@ -35,10 +42,9 @@ export default () => {
         Entrar
       </button>
 
-      <p>
-        Não tem conta?
-        <a href="#register">Criar</a>
-      </p>
+    <p class="bottom-link">
+      Não tem conta? <a href="#register">Cadastre-se grátis</a>
+    </p>
 
     </form>
   `;
