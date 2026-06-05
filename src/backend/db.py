@@ -5,7 +5,7 @@ from flask import g, current_app
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DATABASE_DIR = os.path.join(BASE_DIR, "database")
-DATABASE_PATH = os.path.join(DATABASE_DIR, "GolpeZero.db")
+DATABASE_PATH = os.path.join(DATABASE_DIR, "TrueCall.db")
 
 def get_db():
     if "db" not in g:
@@ -24,6 +24,18 @@ def close_db(e=None):
 
 def init_db():
     db = sqlite3.connect(DATABASE_PATH)
+
+    db.execute("""
+    CREATE TABLE IF NOT EXISTS numero_confiavel (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        instituicao TEXT NOT NULL,
+        numero TEXT NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+        UNIQUE(usuario_id, instituicao, numero)
+    )
+    """)
+    db.commit()
 
     tabela_existe = db.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='usuario'"
