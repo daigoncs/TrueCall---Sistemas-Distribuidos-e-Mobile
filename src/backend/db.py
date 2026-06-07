@@ -9,7 +9,8 @@ DATABASE_PATH = os.path.join(DATABASE_DIR, "TrueCall.db")
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(DATABASE_PATH)
+        db_path = current_app.config.get("DATABASE", DATABASE_PATH) if current_app else DATABASE_PATH
+        g.db = sqlite3.connect(db_path)
 
         g.db.row_factory = sqlite3.Row
 
@@ -22,8 +23,9 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
-def init_db():
-    db = sqlite3.connect(DATABASE_PATH)
+def init_db(app=None):
+    db_path = app.config.get("DATABASE", DATABASE_PATH) if app else DATABASE_PATH
+    db = sqlite3.connect(db_path)
 
     db.execute("""
     CREATE TABLE IF NOT EXISTS numero_confiavel (
@@ -41,6 +43,8 @@ def init_db():
         "SELECT name FROM sqlite_master WHERE type='table' AND name='usuario'"
     ).fetchone()
 
+    is_testing = app.config.get("TESTING", False) if app else False
+
     if not tabela_existe:
         schema_path = os.path.join(DATABASE_DIR, "schema.sql")
         seed_path = os.path.join(DATABASE_DIR, "seed.sql")
@@ -52,8 +56,10 @@ def init_db():
             db.executescript(f.read())
 
         db.commit()
-        print("[DB] Banco inicializado com schema e seed.")
+        if not is_testing:
+            print("[DB] Banco inicializado com schema e seed.")
     else:
-        print("[DB] Banco já existe, pulando inicialização.")
+        if not is_testing:
+            print("[DB] Banco já existe, pulando inicialização.")
 
     db.close()
