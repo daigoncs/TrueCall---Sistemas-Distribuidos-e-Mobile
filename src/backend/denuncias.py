@@ -156,3 +156,58 @@ def deletar_denuncia(denuncia_id, usuario_id):
         return jsonify({"erro": "Denúncia não encontrada"}), 404
 
     return jsonify({"mensagem": "Denúncia removida com sucesso"}), 200
+
+@denuncias_bp.route("/publico/verificar/<string:telefone>", methods=["GET"])
+def verificar_telefone_publico(telefone):
+    telefone_limpo = "".join([c for c in telefone if c.isdigit()])
+
+    if not telefone_limpo:
+        return jsonify({"erro": "Número de telefone inválido"}), 400
+
+    db = get_db()
+
+    oficiais = db.execute("SELECT instituicao, numero FROM numero_confiavel").fetchall()
+    for o in oficiais:
+        num_oficial_limpo = "".join([c for c in o["numero"] if c.isdigit()])
+        coincide = False
+        
+        if num_oficial_limpo == telefone_limpo:
+            coincide = True
+        elif len(num_oficial_limpo) == 8 and len(telefone_limpo) >= 10 and telefone_limpo.endswith(num_oficial_limpo):
+            coincide = True
+        elif len(telefone_limpo) == 8 and len(num_oficial_limpo) >= 10 and num_oficial_limpo.endswith(telefone_limpo):
+            coincide = True
+            
+        if coincide:
+            return jsonify({
+                "status": "confiavel",
+                "detalhes": f"Este número é oficial do {o['instituicao']}."
+            }), 200
+
+    denuncias = db.execute("""
+        SELECT d.telefone, d.instituicao_personalizada, i.nome AS instituicao
+        FROM denuncia d
+        JOIN instituicao i ON d.instituicao_id = i.id
+    """).fetchall()
+
+    count_ocorrencias = 0
+    instituicao_alvo = None
+
+    for d in denuncias:
+        d_tel_limpo = "".join([c for c in d["telefone"] if c.isdigit()])
+        if d_tel_limpo == telefone_limpo:
+            count_ocorrencias += 1
+            if not instituicao_alvo:
+                instituicao_alvo = d["instituicao_personalizada"] if d["instituicao"] == "Outro" else d["instituicao"]
+
+    if count_ocorrencias > 0:
+        inst_texto = f" se passando por {instituicao_alvo}" if instituicao_alvo else ""
+        return jsonify({
+            "status": "suspeito",
+            "detalhes": f"Atenção! Este número possui {count_ocorrencias} denúncia(s) de golpe registrada(s){inst_texto}."
+        }), 200
+
+    return jsonify({
+        "status": "desconhecido",
+        "detalhes": "Nenhum registro de golpe ou de canal oficial encontrado para este número."
+    }), 200

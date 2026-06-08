@@ -5,11 +5,12 @@ from flask import g, current_app
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DATABASE_DIR = os.path.join(BASE_DIR, "database")
-DATABASE_PATH = os.path.join(DATABASE_DIR, "GolpeZero.db")
+DATABASE_PATH = os.path.join(DATABASE_DIR, "TrueCall.db")
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(DATABASE_PATH)
+        db_path = current_app.config.get("DATABASE", DATABASE_PATH) if current_app else DATABASE_PATH
+        g.db = sqlite3.connect(db_path)
 
         g.db.row_factory = sqlite3.Row
 
@@ -22,12 +23,27 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
-def init_db():
-    db = sqlite3.connect(DATABASE_PATH)
+def init_db(app=None):
+    db_path = app.config.get("DATABASE", DATABASE_PATH) if app else DATABASE_PATH
+    db = sqlite3.connect(db_path)
+
+    db.execute("""
+    CREATE TABLE IF NOT EXISTS numero_confiavel (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        instituicao TEXT NOT NULL,
+        numero TEXT NOT NULL,
+        usuario_id INTEGER NOT NULL,
+        FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+        UNIQUE(usuario_id, instituicao, numero)
+    )
+    """)
+    db.commit()
 
     tabela_existe = db.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='usuario'"
     ).fetchone()
+
+    is_testing = app.config.get("TESTING", False) if app else False
 
     if not tabela_existe:
         schema_path = os.path.join(DATABASE_DIR, "schema.sql")
@@ -40,8 +56,10 @@ def init_db():
             db.executescript(f.read())
 
         db.commit()
-        print("[DB] Banco inicializado com schema e seed.")
+        if not is_testing:
+            print("[DB] Banco inicializado com schema e seed.")
     else:
-        print("[DB] Banco já existe, pulando inicialização.")
+        if not is_testing:
+            print("[DB] Banco já existe, pulando inicialização.")
 
     db.close()

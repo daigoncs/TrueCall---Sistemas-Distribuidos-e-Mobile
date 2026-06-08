@@ -34,3 +34,12 @@ CREATE TABLE denuncia (
 
     UNIQUE(usuario_id, telefone)
 );
+
+CREATE TABLE numero_confiavel (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    instituicao TEXT NOT NULL,
+    numero TEXT NOT NULL,
+    usuario_id INTEGER NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+    UNIQUE(usuario_id, instituicao, numero)
+);

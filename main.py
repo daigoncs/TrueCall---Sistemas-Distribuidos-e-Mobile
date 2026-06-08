@@ -9,12 +9,15 @@ from src.backend.denuncias import denuncias_bp
 from src.backend.instituicoes import instituicoes_bp
 from src.backend.tipos_golpe import tipos_golpe_bp
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
 
     app.config["SECRET_KEY"] = os.environ.get(
         "SECRET_KEY", "golpezero-chave-secreta-dev"
     )
+
+    if test_config:
+        app.config.update(test_config)
 
     CORS(app)
 
@@ -39,7 +42,7 @@ def create_app():
             }
         }
 
-    init_db()
+    init_db(app)
 
     return app
 

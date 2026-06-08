@@ -207,3 +207,87 @@ label {
     font-size: 1.4rem;
   }
 }
+
+/* ── Consulta Rápida Pública ── */
+.login-page-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2rem;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.login-box, .consulta-box {
+  flex: 1;
+}
+
+.consulta-subtitulo {
+  font-size: 0.85rem;
+  color: #6b6b6b;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.45;
+}
+
+.resultado-consulta {
+  font-size: 0.85rem;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.1rem;
+  line-height: 1.5;
+  border-left: 4px solid transparent;
+  text-align: left;
+}
+
+.resultado-consulta strong {
+  font-family: "Sora", sans-serif;
+  font-size: 0.9rem;
+}
+
+.resultado-consulta.confiavel {
+  background: #f0faf4;
+  color: #1e7a44;
+  border-left-color: #1e7a44;
+  border-top: 1px solid #a8ddb9;
+  border-right: 1px solid #a8ddb9;
+  border-bottom: 1px solid #a8ddb9;
+}
+
+.resultado-consulta.suspeito {
+  background: #fef2f2;
+  color: #991b1b;
+  border-left-color: #991b1b;
+  border-top: 1px solid #fecaca;
+  border-right: 1px solid #fecaca;
+  border-bottom: 1px solid #fecaca;
+}
+
+.resultado-consulta.desconhecido {
+  background: #f3f4f6;
+  color: #4b5563;
+  border-left-color: #4b5563;
+  border-top: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.resultado-consulta.erro {
+  background: #fffbeb;
+  color: #b45309;
+  border-left-color: #d97706;
+  border-top: 1px solid #fde68a;
+  border-right: 1px solid #fde68a;
+  border-bottom: 1px solid #fde68a;
+}
+
+@media (max-width: 800px) {
+  .login-page-container {
+    flex-direction: column;
+    align-items: center;
+    max-width: 420px;
+    padding: 1rem;
+  }
+}

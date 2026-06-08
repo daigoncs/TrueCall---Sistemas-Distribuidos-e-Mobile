@@ -72,6 +72,25 @@ export default () => {
   const token = localStorage.getItem("token");
   const msg = container.querySelector("#message");
   const selInst = container.querySelector("#instituicao");
+  const inputTel = container.querySelector("#telefone");
+
+  // Mascara de telefone (celular/fixo) automatica
+  inputTel.addEventListener("input", (e) => {
+    let valor = e.target.value.replace(/\D/g, "");
+    if (valor.length > 11) valor = valor.slice(0, 11);
+
+    if (valor.length === 0) {
+      e.target.value = "";
+    } else if (valor.length <= 2) {
+      e.target.value = `(${valor}`;
+    } else if (valor.length <= 6) {
+      e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
+    } else if (valor.length <= 10) {
+      e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
+    } else {
+      e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
+    }
+  });
 
   // Mostra campo personalizada quando "Outro" for selecionado
   selInst.addEventListener("change", () => {
@@ -105,6 +124,15 @@ export default () => {
     msg.className = "denuncia-msg";
     msg.innerHTML = "";
 
+    const telefoneVal = inputTel.value;
+    const telefoneLimpo = telefoneVal.replace(/\D/g, "");
+
+    if (telefoneLimpo.length !== 10 && telefoneLimpo.length !== 11) {
+      msg.className = "denuncia-msg error";
+      msg.innerHTML = "Por favor, insira um telefone válido com DDD (10 ou 11 dígitos).";
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:5000/api/denuncias", {
         method: "POST",
@@ -113,7 +141,7 @@ export default () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          telefone: container.querySelector("#telefone").value,
+          telefone: telefoneVal,
           descricao: container.querySelector("#descricao").value,
           instituicao_id: container.querySelector("#instituicao").value,
           tipo_golpe_id: container.querySelector("#tipoGolpe").value,
