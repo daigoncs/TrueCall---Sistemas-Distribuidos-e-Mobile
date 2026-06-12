@@ -6,10 +6,10 @@ class TestAuthAPI(BaseTestCase):
         resposta = self.client.post("/api/auth/registrar", json={
             "nome": "Usuario Valido",
             "email": "valido@example.com",
-            "senha": "senha_segura"
+            "senha": "Senha@123"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 201)
         self.assertEqual(dados["mensagem"], "Usuário registrado com sucesso")
         self.assertIn("usuario", dados)
@@ -22,7 +22,7 @@ class TestAuthAPI(BaseTestCase):
             "nome": "Sem Email e Senha"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 400)
         self.assertIn("erro", dados)
         self.assertIn("obrigatório", dados["erro"])
@@ -32,81 +32,111 @@ class TestAuthAPI(BaseTestCase):
         resposta = self.client.post("/api/auth/registrar", json={
             "nome": "Usuario Email Invalido",
             "email": "email_sem_arroba.com",
-            "senha": "senha_segura"
+            "senha": "Senha@123"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 400)
         self.assertEqual(dados["erro"], "Formato de email inválido")
 
     def test_registro_senha_curta(self):
-        """Garante que senhas menores que 6 caracteres retornam erro 400."""
+        """Garante que senhas com menos de 8 caracteres retornam erro 400."""
         resposta = self.client.post("/api/auth/registrar", json={
             "nome": "Usuario Senha Curta",
             "email": "curta@example.com",
-            "senha": "123"
+            "senha": "Ab@1"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 400)
-        self.assertEqual(dados["erro"], "A senha deve ter no mínimo 6 caracteres")
+        self.assertIn("erro", dados)
+
+    def test_registro_senha_sem_maiuscula(self):
+        """Garante que senhas sem letra maiúscula são rejeitadas."""
+        resposta = self.client.post("/api/auth/registrar", json={
+            "nome": "Sem Maiuscula",
+            "email": "semmaius@example.com",
+            "senha": "senha@123"
+        })
+        dados = resposta.get_json()
+
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn("erro", dados)
+
+    def test_registro_senha_sem_numero(self):
+        """Garante que senhas sem número são rejeitadas."""
+        resposta = self.client.post("/api/auth/registrar", json={
+            "nome": "Sem Numero",
+            "email": "semnum@example.com",
+            "senha": "Senha@abc"
+        })
+        dados = resposta.get_json()
+
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn("erro", dados)
+
+    def test_registro_senha_sem_especial(self):
+        """Garante que senhas sem caractere especial são rejeitadas."""
+        resposta = self.client.post("/api/auth/registrar", json={
+            "nome": "Sem Especial",
+            "email": "semesp@example.com",
+            "senha": "Senha1234"
+        })
+        dados = resposta.get_json()
+
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn("erro", dados)
 
     def test_registro_email_duplicado(self):
         """Garante que não seja possível cadastrar dois usuários com o mesmo e-mail (erro 409)."""
-        # Primeiro cadastro
         self.client.post("/api/auth/registrar", json={
             "nome": "Primeiro",
             "email": "duplicado@example.com",
-            "senha": "senha_segura"
+            "senha": "Senha@123"
         })
-        
-        # Segundo cadastro com mesmo email
+
         resposta = self.client.post("/api/auth/registrar", json={
             "nome": "Segundo",
             "email": "duplicado@example.com",
-            "senha": "senha_segura"
+            "senha": "Senha@123"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 409)
         self.assertEqual(dados["erro"], "Este email já está cadastrado")
 
     def test_login_sucesso(self):
         """Valida o login de um usuário cadastrado com credenciais corretas."""
-        # Cadastra
         self.client.post("/api/auth/registrar", json={
             "nome": "Login Valido",
             "email": "login@example.com",
-            "senha": "senha_correta"
+            "senha": "Senha@123"
         })
-        
-        # Faz login
+
         resposta = self.client.post("/api/auth/login", json={
             "email": "login@example.com",
-            "senha": "senha_correta"
+            "senha": "Senha@123"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(dados["mensagem"], "Login realizado com sucesso")
         self.assertIn("token", dados)
         self.assertEqual(dados["usuario"]["nome"], "Login Valido")
 
     def test_login_falha_credenciais_incorretas(self):
-        """Garante que login com senha incorreta ou email inexistente retorna erro 401."""
-        # Cadastra
+        """Garante que login com senha incorreta retorna erro 401."""
         self.client.post("/api/auth/registrar", json={
             "nome": "Login Invalido",
             "email": "login_invalido@example.com",
-            "senha": "senha_correta"
+            "senha": "Senha@123"
         })
-        
-        # Login com senha incorreta
+
         resposta = self.client.post("/api/auth/login", json={
             "email": "login_invalido@example.com",
             "senha": "senha_errada"
         })
         dados = resposta.get_json()
-        
+
         self.assertEqual(resposta.status_code, 401)
         self.assertEqual(dados["erro"], "Email ou senha incorretos")

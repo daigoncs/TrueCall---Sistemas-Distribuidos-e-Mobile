@@ -39,6 +39,42 @@ export default () => {
             </div>
           </div>
 
+          <div style="margin-top: 15px; margin-bottom: 15px;">
+            <label for="estado">Estado (UF)</label>
+            <div class="select-wrapper">
+              <select id="estado" class="input" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; box-sizing: border-box;">
+                <option value="">Selecionar estado...</option>
+                <option value="AC">Acre</option>
+                <option value="AL">Alagoas</option>
+                <option value="AP">Amapá</option>
+                <option value="AM">Amazonas</option>
+                <option value="BA">Bahia</option>
+                <option value="CE">Ceará</option>
+                <option value="DF">Distrito Federal</option>
+                <option value="ES">Espírito Santo</option>
+                <option value="GO">Goiás</option>
+                <option value="MA">Maranhão</option>
+                <option value="MT">Mato Grosso</option>
+                <option value="MS">Mato Grosso do Sul</option>
+                <option value="MG">Minas Gerais</option>
+                <option value="PA">Pará</option>
+                <option value="PB">Paraíba</option>
+                <option value="PR">Paraná</option>
+                <option value="PE">Pernambuco</option>
+                <option value="PI">Piauí</option>
+                <option value="RJ">Rio de Janeiro</option>
+                <option value="RN">Rio Grande do Norte</option>
+                <option value="RS">Rio Grande do Sul</option>
+                <option value="RO">Rondônia</option>
+                <option value="RR">Roraima</option>
+                <option value="SC">Santa Catarina</option>
+                <option value="SP">São Paulo</option>
+                <option value="SE">Sergipe</option>
+                <option value="TO">Tocantins</option>
+              </select>
+            </div>
+          </div>
+
           <div id="wrapperPersonalizada" style="display: none;">
             <label for="instituicaoPersonalizada">Qual instituição?</label>
             <input
@@ -48,10 +84,24 @@ export default () => {
             />
           </div>
 
-          <label for="descricao">Descrição</label>
+          <div id="wrapperTipoPersonalizado" style="display: none;">
+            <label for="tipoPersonalizado">Qual tipo de golpe?</label>
+            <input
+              id="tipoPersonalizado"
+              class="input"
+              placeholder="Ex: Golpe do Motoboy"
+            />
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="descricao" style="margin-bottom: 0;">Descrição</label>
+            <span id="charCount" style="font-size: 0.75rem; color: #6b6b6b; font-family: 'DM Sans', sans-serif;">0/300</span>
+          </div>
           <textarea
             id="descricao"
             placeholder="Descreva o que aconteceu na ligação..."
+            maxlength="300"
+            style="margin-top: 0.4rem;"
           ></textarea>
 
           <p id="message" class="denuncia-msg"></p>
@@ -74,10 +124,16 @@ export default () => {
   const selInst = container.querySelector("#instituicao");
   const inputTel = container.querySelector("#telefone");
 
-  // Mascara de telefone (celular/fixo) automatica
+  // Máscara adaptativa: celular (9 dígitos) vs. fixo (8 dígitos)
+  // Regra: se o 3º dígito (1º após o DDD) for '9' → celular → 11 dígitos total
+  //        se não for '9'                          → fixo   → 10 dígitos total
   inputTel.addEventListener("input", (e) => {
     let valor = e.target.value.replace(/\D/g, "");
-    if (valor.length > 11) valor = valor.slice(0, 11);
+
+    // Determina o limite: só decide quando já temos DDD + 1 dígito local
+    const ehCelular = valor.length >= 3 && valor[2] === "9";
+    const limite = ehCelular ? 11 : 10;
+    if (valor.length > limite) valor = valor.slice(0, limite);
 
     if (valor.length === 0) {
       e.target.value = "";
@@ -86,17 +142,35 @@ export default () => {
     } else if (valor.length <= 6) {
       e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
     } else if (valor.length <= 10) {
+      // Fixo: (11) 3333-4444  |  Celular ainda construindo: (11) 9999-4444
       e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
     } else {
+      // Celular completo: (11) 99999-4444
       e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
     }
   });
+
+  const inputDesc = container.querySelector("#descricao");
+  const charCount = container.querySelector("#charCount");
+  inputDesc.addEventListener("input", (e) => {
+    charCount.textContent = `${e.target.value.length}/300`;
+  });
+
 
   // Mostra campo personalizada quando "Outro" for selecionado
   selInst.addEventListener("change", () => {
     const isOutro =
       selInst.options[selInst.selectedIndex]?.text.toLowerCase() === "outro";
     container.querySelector("#wrapperPersonalizada").style.display = isOutro
+      ? "block"
+      : "none";
+  });
+
+  const selTipo = container.querySelector("#tipoGolpe");
+  selTipo.addEventListener("change", () => {
+    const isOutro =
+      selTipo.options[selTipo.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperTipoPersonalizado").style.display = isOutro
       ? "block"
       : "none";
   });
@@ -112,7 +186,7 @@ export default () => {
   async function carregarTipos() {
     const response = await fetch("http://localhost:5000/api/tipos-golpe");
     const dados = await response.json();
-    container.querySelector("#tipoGolpe").innerHTML =
+    selTipo.innerHTML =
       `<option value="">Selecionar...</option>` +
       dados.map((t) => `<option value="${t.id}">${t.nome}</option>`).join("");
   }
@@ -127,9 +201,15 @@ export default () => {
     const telefoneVal = inputTel.value;
     const telefoneLimpo = telefoneVal.replace(/\D/g, "");
 
-    if (telefoneLimpo.length !== 10 && telefoneLimpo.length !== 11) {
+    // Valida: celular = 11 dígitos (3º dígito é '9'); fixo = 10 dígitos
+    const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
+    const tamanhoEsperado = ehCelular ? 11 : 10;
+
+    if (telefoneLimpo.length !== tamanhoEsperado) {
       msg.className = "denuncia-msg error";
-      msg.innerHTML = "Por favor, insira um telefone válido com DDD (10 ou 11 dígitos).";
+      msg.innerHTML = ehCelular || telefoneLimpo.length < 3
+        ? "Celulares precisam de DDD + 9 dígitos. Ex: (11) 99999-9999"
+        : "Fixos precisam de DDD + 8 dígitos. Ex: (11) 3333-4444";
       return;
     }
 
@@ -148,6 +228,10 @@ export default () => {
           instituicao_personalizada: container.querySelector(
             "#instituicaoPersonalizada",
           ).value,
+          tipo_golpe_personalizado: container.querySelector(
+            "#tipoPersonalizado",
+          ).value,
+          estado: container.querySelector("#estado").value,
         }),
       });
 

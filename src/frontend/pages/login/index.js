@@ -150,7 +150,11 @@ export default () => {
         e.target.value = `${valor.slice(0, 4)}-${valor.slice(4)}`;
       }
     } else {
-      if (valor.length > 11) valor = valor.slice(0, 11);
+      // Celular (3º dígito = '9') → 11 total | Fixo → 10 total
+      const ehCelular = valor.length >= 3 && valor[2] === "9";
+      const limite = ehCelular ? 11 : 10;
+      if (valor.length > limite) valor = valor.slice(0, limite);
+
       if (valor.length === 0) {
         e.target.value = "";
       } else if (valor.length <= 2) {
@@ -158,12 +162,79 @@ export default () => {
       } else if (valor.length <= 6) {
         e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
       } else if (valor.length <= 10) {
+        // Fixo: (11) 3333-4444  |  Celular ainda construindo
         e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
       } else {
+        // Celular completo: (11) 99999-4444
         e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
       }
     }
   });
+
+  function obterDicasDefesa(tipos) {
+    const recomendacoes = [];
+
+    // Mapeamento de palavras-chave para blocos de dicas de seguranca
+    const mapDicas = {
+      "Falsa Central Bancária": [
+        "Desligue imediatamente. Bancos nunca ligam solicitando transferências, digitação de senhas ou códigos de segurança por telefone.",
+        "Use outro aparelho telefônico para ligar para o canal oficial de atendimento do seu banco (o número no verso do seu cartão) para confirmar qualquer transação suspeita."
+      ],
+      "PIX Fraudulento": [
+        "Não realize transferências urgentes baseadas em pedidos por mensagens, mesmo que pareça ser um conhecido. Confirme a identidade por ligação de voz antes.",
+        "Em caso de fraude PIX, entre em contato imediatamente com seu banco para solicitar o MED (Mecanismo Especial de Devolução [sistema de bloqueio rápido de valores fraudados]) em até 80 dias."
+      ],
+      "Cartão Clonado": [
+        "Se suspeitar de clonagem, bloqueie imediatamente o cartão físico pelo aplicativo oficial do seu banco.",
+        "Lembre-se: os bancos nunca enviam motoboys ou representantes para recolher cartões físicos em sua residência, mesmo sob alegação de perícia por fraude."
+      ],
+      "Empréstimo Falso": [
+        "Desconfie de ofertas de empréstimos facilitados que exigem pagamentos adiantados a pretexto de taxas de cartório, fiador ou seguros.",
+        "Consulte no site do Banco Central se a instituição financeira de fato possui autorização para operar crédito."
+      ]
+    };
+
+    let ativouDica = false;
+    (tipos || []).forEach(tipo => {
+      const tipoLower = tipo.toLowerCase();
+      if (tipoLower.includes("central") || tipoLower.includes("banco") || tipoLower.includes("bancária") || tipoLower.includes("bancaria") || tipoLower.includes("ligação") || tipoLower.includes("ligacao")) {
+        recomendacoes.push(...mapDicas["Falsa Central Bancária"]);
+        ativouDica = true;
+      }
+      if (tipoLower.includes("pix") || tipoLower.includes("transferência") || tipoLower.includes("transferencia") || tipoLower.includes("pagamento")) {
+        recomendacoes.push(...mapDicas["PIX Fraudulento"]);
+        ativouDica = true;
+      }
+      if (tipoLower.includes("cartão") || tipoLower.includes("cartao") || tipoLower.includes("clonado") || tipoLower.includes("motoboy")) {
+        recomendacoes.push(...mapDicas["Cartão Clonado"]);
+        ativouDica = true;
+      }
+      if (tipoLower.includes("empréstimo") || tipoLower.includes("emprestimo") || tipoLower.includes("crédito") || tipoLower.includes("credito") || tipoLower.includes("financiamento")) {
+        recomendacoes.push(...mapDicas["Empréstimo Falso"]);
+        ativouDica = true;
+      }
+    });
+
+    if (!ativouDica) {
+      recomendacoes.push(
+        "Nunca compartilhe códigos de autenticação (como SMS ou tokens) com terceiros.",
+        "Desconfie de mensagens urgentes que contenham links externos para atualização cadastral ou resgate de prêmios fictícios."
+      );
+    }
+
+    const dicasUnicas = [...new Set(recomendacoes)];
+
+    return `
+      <div class="defesa-contextual" style="margin-top: 12px; padding: 10px 12px; background-color: #ffffff; border: 1.5px solid #fecaca; border-left: 4px solid #991b1b; border-radius: 6px; text-align: left;">
+        <div style="font-weight: bold; color: #991b1b; font-size: 0.8rem; margin-bottom: 6px; font-family: 'Sora', sans-serif;">
+          Guia de Defesa Recomendado
+        </div>
+        <ul style="margin: 0; padding-left: 16px; font-size: 0.775rem; color: #7f1d1d; line-height: 1.4;">
+          ${dicasUnicas.map(dica => `<li style="margin-bottom: 4px;">${dica}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
 
   btnConsultar.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -174,7 +245,15 @@ export default () => {
     const telefoneVal = inputConsulta.value;
     const telefoneLimpo = telefoneVal.replace(/\D/g, "");
 
-    if (telefoneLimpo.length !== 8 && telefoneLimpo.length !== 10 && telefoneLimpo.length !== 11) {
+    // Valida: 0800 (11 dígitos), 4004/3003 (8), celular (11), fixo (10)
+    const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
+    const tamanhoValido = (
+      telefoneLimpo.length === 8   ||   // 4004/3003
+      telefoneLimpo.length === 11 && telefoneLimpo.startsWith("0800") || // 0800
+      (ehCelular ? telefoneLimpo.length === 11 : telefoneLimpo.length === 10)
+    );
+
+    if (!tamanhoValido) {
       resultadoConsulta.style.display = "block";
       resultadoConsulta.classList.add("erro");
       resultadoConsulta.innerHTML = "Por favor, digite um número válido (celular, fixo, 0800 ou 4004).";
@@ -195,7 +274,12 @@ export default () => {
         resultadoConsulta.innerHTML = `<strong>Número Oficial</strong><br>${data.detalhes}`;
       } else if (data.status === "suspeito") {
         resultadoConsulta.classList.add("suspeito");
-        resultadoConsulta.innerHTML = `<strong>Aviso de Golpe</strong><br>${data.detalhes}`;
+        const dicasHtml = obterDicasDefesa(data.tipos_golpe);
+        resultadoConsulta.innerHTML = `
+          <strong>Aviso de Golpe</strong><br>
+          ${data.detalhes}
+          ${dicasHtml}
+        `;
       } else {
         resultadoConsulta.classList.add("desconhecido");
         resultadoConsulta.innerHTML = `<strong>Não Registrado</strong><br>${data.detalhes}`;

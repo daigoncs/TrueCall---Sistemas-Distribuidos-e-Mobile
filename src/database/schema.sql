@@ -27,6 +27,8 @@ CREATE TABLE denuncia (
     instituicao_personalizada TEXT,
 
     tipo_golpe_id INTEGER NOT NULL,
+    tipo_golpe_personalizado TEXT,
+    estado TEXT,
 
     FOREIGN KEY (usuario_id) REFERENCES usuario(id),
     FOREIGN KEY (instituicao_id) REFERENCES instituicao(id),
@@ -43,3 +45,13 @@ CREATE TABLE numero_confiavel (
     FOREIGN KEY (usuario_id) REFERENCES usuario(id),
     UNIQUE(usuario_id, instituicao, numero)
 );
+
+CREATE TABLE voto_denuncia (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    denuncia_id INTEGER NOT NULL,
+    usuario_id  INTEGER NOT NULL,
+    data_voto   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (denuncia_id) REFERENCES denuncia(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id)  REFERENCES usuario(id),
+    UNIQUE(denuncia_id, usuario_id)
+);

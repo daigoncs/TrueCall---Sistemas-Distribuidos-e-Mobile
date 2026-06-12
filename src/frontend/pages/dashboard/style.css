@@ -139,10 +139,9 @@
   border-radius: 14px;
   padding: 1.25rem 1.4rem;
   border: 1.5px solid #ebebeb;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto auto;
-  gap: 0.1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
@@ -153,21 +152,23 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
+.card-header-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
 .cardDenuncia h3 {
-  grid-column: 1;
-  grid-row: 1;
   font-family: "Sora", sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: #111111;
-  margin-bottom: 0.4rem;
+  margin: 0;
   letter-spacing: 0.01em;
 }
 
 .badge-tipo {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: start;
   background: #fff0e8;
   color: #c04a14;
   font-size: 0.72rem;
@@ -180,12 +181,10 @@
 }
 
 .card-meta {
-  grid-column: 1 / -1;
-  grid-row: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1.25rem;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.2rem;
 }
 
 .card-meta span {
@@ -199,24 +198,50 @@
 }
 
 .card-descricao {
-  grid-column: 1;
-  grid-row: 3;
   font-size: 0.875rem;
   color: #4a4a4a;
   line-height: 1.55;
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
-.btnExcluir {
-  grid-column: 2;
-  grid-row: 3;
-  align-self: end;
+.card-acoes {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 0.75rem;
+}
+
+.btn-editar-card {
+  background: #3b82f6;
+  color: #ffffff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.btn-editar-card:hover {
+  background: #2563eb;
+}
+
+.btn-excluir-card {
   background: transparent;
   border: 1.5px solid #fecaca;
   color: #dc2626;
   font-family: "DM Sans", sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.4rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
@@ -225,12 +250,12 @@
     border-color 0.2s;
 }
 
-.btnExcluir:hover {
+.btn-excluir-card:hover {
   background: #fef2f2;
   border-color: #fca5a5;
 }
 
-.btnExcluir:active {
+.btn-excluir-card:active {
   transform: scale(0.97);
 }
 
@@ -458,6 +483,8 @@
   padding: 2rem 1.75rem;
   width: 100%;
   max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
   border: 1.5px solid #ebebeb;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
   animation: slideUp 0.2s ease;
@@ -733,21 +760,100 @@
   transform: scale(0.97);
 }
 
-/* ── Painel de Alerta (Modus Operandi) ── */
-.painel-alerta {
+/* ── Card do Gráfico de Pizza (substitui .painel-alerta) ── */
+.grafico-card {
+  background: #ffffff;
+  border: 1.5px solid #ebebeb;
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.grafico-header {
+  margin-bottom: 1rem;
+}
+
+.grafico-titulo {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111111;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.grafico-body {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+#pizzaCanvas {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Banner de alerta contextual dentro do gráfico */
+.grafico-banner {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   background: #fff8f5;
-  color: #c04a14;
   border: 1.5px solid #ffded0;
   border-left: 4px solid #e8571a;
   border-radius: 8px;
-  padding: 0.85rem 1.1rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  text-align: left;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #4a4a4a;
 }
 
-.painel-alerta strong {
+.grafico-banner strong {
+  color: #c04a14;
+}
+
+.banner-icone {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+/* Legenda do gráfico */
+.grafico-legenda {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #4a4a4a;
+}
+
+.legenda-cor {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legenda-nome {
+  color: #333;
+}
+
+.legenda-pct {
+  font-weight: 700;
   color: #111111;
-  font-family: "Sora", sans-serif;
+  margin-left: 0.15rem;
 }

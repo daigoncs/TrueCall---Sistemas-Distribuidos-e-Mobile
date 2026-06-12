@@ -34,6 +34,7 @@ class BaseTestCase(unittest.TestCase):
         # Cria o app do Flask em modo de teste com o banco temporário
         self.app = create_app({
             "TESTING": True,
+            "SECRET_KEY": "chave-de-teste-segura",
             "DATABASE": self.test_db_path
         })
         self.client = self.app.test_client()
@@ -46,7 +47,7 @@ class BaseTestCase(unittest.TestCase):
             except OSError:
                 pass
 
-    def registrar_e_logar(self, nome="Usuario Teste", email="teste@example.com", senha="password123"):
+    def registrar_e_logar(self, nome="Usuario Teste", email="teste@example.com", senha="Senha@123"):
         """Função auxiliar para registrar e obter o token JWT de um usuário de testes."""
         # Registra
         self.client.post("/api/auth/registrar", json={
@@ -54,12 +55,12 @@ class BaseTestCase(unittest.TestCase):
             "email": email,
             "senha": senha
         })
-        
+
         # Loga
         resposta = self.client.post("/api/auth/login", json={
             "email": email,
             "senha": senha
         })
-        
+
         dados = resposta.get_json()
         return dados.get("token")
