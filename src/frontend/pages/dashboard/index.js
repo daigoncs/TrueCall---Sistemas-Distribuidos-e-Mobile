@@ -6,7 +6,11 @@ export default () => {
 
       <nav class="topbar">
         <span class="topbar-brand">True<span>Call</span></span>
-        <button id="logout" class="btn-logout">Sair</button>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <button id="btnIrBlacklist" class="btn-logout" style="border-color: rgba(232, 87, 26, 0.4); color: #e8571a; font-weight: 600;">Blacklist de Golpes</button>
+          <button id="btnIrQuiz" class="btn-logout" style="border-color: rgba(232, 87, 26, 0.4); color: #e8571a; font-weight: 600;">Simulador de Golpes</button>
+          <button id="logout" class="btn-logout">Sair</button>
+        </div>
       </nav>
 
       <main class="dashboard-main">
@@ -20,7 +24,33 @@ export default () => {
                 <button id="novaDenuncia" class="btn-nova">+ Nova Denúncia</button>
               </div>
             </div>
-            <div id="painelAlerta" class="painel-alerta" style="display: none;"></div>
+
+            <!-- Painel de Gráficos em Linha (Grid) -->
+            <div class="dashboard-graficos-row" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+              <!-- Gráfico de pizza: Tipo de Golpe -->
+              <div id="graficoCard" class="grafico-card" style="display:none; flex: 1; min-width: 280px; margin-bottom: 0;">
+                <div class="grafico-header">
+                  <span class="grafico-titulo">Distribuição por Tipo de Golpe</span>
+                </div>
+                <div class="grafico-body" style="display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center;">
+                  <canvas id="pizzaCanvas" width="140" height="140"></canvas>
+                  <ul id="graficoLegenda" class="grafico-legenda" style="margin-top: 0.5rem; justify-content: center; width: 100%;"></ul>
+                  <div id="graficoBanner" class="grafico-banner" style="margin-top: 0.5rem; width: 100%; box-sizing: border-box; text-align: left;"></div>
+                </div>
+              </div>
+
+              <!-- Distribuição Geográfica de Golpes (Pizza) -->
+              <div id="regioesCard" class="grafico-card" style="display:none; flex: 1; min-width: 280px; margin-bottom: 0;">
+                <div class="grafico-header">
+                  <span class="grafico-titulo">Distribuição de Golpes por região</span>
+                </div>
+                <div class="grafico-body" style="display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center;">
+                  <canvas id="regioesCanvas" width="140" height="140"></canvas>
+                  <ul id="legendaRegioes" class="grafico-legenda" style="margin-top: 0.5rem; justify-content: center; width: 100%;"></ul>
+                </div>
+              </div>
+            </div>
+
             <div id="listaDenuncias"></div>
           </section>
 
@@ -69,6 +99,79 @@ export default () => {
         </div>
       </div>
 
+      <!-- Modal para editar denúncia -->
+      <div id="modalEditar" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Editar Denúncia</h3>
+            <button id="btnFecharModalEditar" class="modal-close">&times;</button>
+          </div>
+          
+          <label for="editInstituicao">Instituição</label>
+          <div class="select-wrapper">
+            <select id="editInstituicao" class="input" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; box-sizing: border-box;"></select>
+          </div>
+
+          <div id="wrapperEditInstituicaoPersonalizada" style="display: none; margin-top: 10px;">
+            <label for="editInstituicaoPersonalizada">Qual instituição?</label>
+            <input id="editInstituicaoPersonalizada" class="input" placeholder="Ex: Banco XYZ" />
+          </div>
+
+          <label for="editTipoGolpe" style="margin-top: 15px; display: block;">Tipo de golpe</label>
+          <div class="select-wrapper">
+            <select id="editTipoGolpe" class="input" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; box-sizing: border-box;"></select>
+          </div>
+
+          <div id="wrapperEditTipoPersonalizado" style="display: none; margin-top: 10px;">
+            <label for="editTipoPersonalizado">Qual tipo de golpe?</label>
+            <input id="editTipoPersonalizado" class="input" placeholder="Ex: Golpe do Motoboy" />
+          </div>
+
+          <label for="editEstado" style="margin-top: 15px; display: block;">Estado (UF)</label>
+          <div class="select-wrapper">
+            <select id="editEstado" class="input" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; box-sizing: border-box;">
+              <option value="">Selecionar estado...</option>
+              <option value="AC">Acre</option>
+              <option value="AL">Alagoas</option>
+              <option value="AP">Amapá</option>
+              <option value="AM">Amazonas</option>
+              <option value="BA">Bahia</option>
+              <option value="CE">Ceará</option>
+              <option value="DF">Distrito Federal</option>
+              <option value="ES">Espírito Santo</option>
+              <option value="GO">Goiás</option>
+              <option value="MA">Maranhão</option>
+              <option value="MT">Mato Grosso</option>
+              <option value="MS">Mato Grosso do Sul</option>
+              <option value="MG">Minas Gerais</option>
+              <option value="PA">Pará</option>
+              <option value="PB">Paraíba</option>
+              <option value="PR">Paraná</option>
+              <option value="PE">Pernambuco</option>
+              <option value="PI">Piauí</option>
+              <option value="RJ">Rio de Janeiro</option>
+              <option value="RN">Rio Grande do Norte</option>
+              <option value="RS">Rio Grande do Sul</option>
+              <option value="RO">Rondônia</option>
+              <option value="RR">Roraima</option>
+              <option value="SC">Santa Catarina</option>
+              <option value="SP">São Paulo</option>
+              <option value="SE">Sergipe</option>
+              <option value="TO">Tocantins</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+            <label for="editDescricao" style="margin-bottom: 0;">Descrição</label>
+            <span id="editCharCount" style="font-size: 0.75rem; color: #6b6b6b; font-family: 'DM Sans', sans-serif;">0/300</span>
+          </div>
+          <textarea id="editDescricao" class="input" placeholder="Descreva o que aconteceu..." maxlength="300" style="min-height: 100px; width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; font-family: inherit; box-sizing: border-box; resize: vertical;"></textarea>
+
+          <p id="modalEditMsg" class="modal-msg"></p>
+          <button id="btnSalvarEdicao" class="btn-registrar" style="margin-top: 15px; width: 100%;">Salvar Alterações</button>
+        </div>
+      </div>
+
     </div>
   `;
 
@@ -81,6 +184,14 @@ export default () => {
   // -- Navegação --
   container.querySelector("#novaDenuncia").addEventListener("click", () => {
     window.location.hash = "#denuncia";
+  });
+
+  container.querySelector("#btnIrBlacklist").addEventListener("click", () => {
+    window.location.hash = "#blacklist";
+  });
+
+  container.querySelector("#btnIrQuiz").addEventListener("click", () => {
+    window.location.hash = "#quiz";
   });
 
   container.querySelector("#logout").addEventListener("click", () => {
@@ -295,12 +406,332 @@ export default () => {
     }
   });
 
-  // -- Denúncias --
+  // -- Modal Editar Denúncia --
+  const modalEditar = container.querySelector("#modalEditar");
+  const editInst = container.querySelector("#editInstituicao");
+  const editTipo = container.querySelector("#editTipoGolpe");
+  const editDesc = container.querySelector("#editDescricao");
+  const editInstPers = container.querySelector("#editInstituicaoPersonalizada");
+  const editTipoPers = container.querySelector("#editTipoPersonalizado");
+  const editEstado = container.querySelector("#editEstado");
+  const modalEditMsg = container.querySelector("#modalEditMsg");
+  let denunciaSendoEditadaId = null;
+
+  const editCharCount = container.querySelector("#editCharCount");
+  editDesc.addEventListener("input", (e) => {
+    editCharCount.textContent = `${e.target.value.length}/300`;
+  });
+
+  // Carregar opções dos selects para edição
+  let instituicoesCarregadas = false;
+  let tiposCarregados = false;
+
+  async function prepararSelectsEdicao() {
+    if (!instituicoesCarregadas) {
+      try {
+        const response = await fetch("http://localhost:5000/api/instituicoes");
+        const dados = await response.json();
+        editInst.innerHTML =
+          `<option value="">Selecionar...</option>` +
+          dados.map((i) => `<option value="${i.id}">${i.nome}</option>`).join("");
+        instituicoesCarregadas = true;
+      } catch (e) {
+        console.error("Erro ao carregar instituições no modal de edição", e);
+      }
+    }
+
+    if (!tiposCarregados) {
+      try {
+        const response = await fetch("http://localhost:5000/api/tipos-golpe");
+        const dados = await response.json();
+        editTipo.innerHTML =
+          `<option value="">Selecionar...</option>` +
+          dados.map((t) => `<option value="${t.id}">${t.nome}</option>`).join("");
+        tiposCarregados = true;
+      } catch (e) {
+        console.error("Erro ao carregar tipos de golpe no modal de edição", e);
+      }
+    }
+  }
+
+  // Listeners de mudança nos selects do modal de edição
+  editInst.addEventListener("change", () => {
+    const isOutro = editInst.options[editInst.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperEditInstituicaoPersonalizada").style.display = isOutro ? "block" : "none";
+  });
+
+  editTipo.addEventListener("change", () => {
+    const isOutro = editTipo.options[editTipo.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperEditTipoPersonalizado").style.display = isOutro ? "block" : "none";
+  });
+
+  async function abrirModalEditar(id) {
+    denunciaSendoEditadaId = id;
+    modalEditMsg.textContent = "";
+    modalEditMsg.className = "modal-msg";
+
+    await prepararSelectsEdicao();
+
+    const denuncia = todasAsDenuncias.find((d) => d.id == id);
+    if (!denuncia) {
+      alert("Denúncia não encontrada localmente.");
+      return;
+    }
+
+    // Preenche os valores atuais
+    editDesc.value = denuncia.descricao || "";
+    container.querySelector("#editCharCount").textContent = `${(denuncia.descricao || "").length}/300`;
+    editInst.value = denuncia.instituicao_id || "";
+    editTipo.value = denuncia.tipo_golpe_id || "";
+    editEstado.value = denuncia.estado || "";
+
+    // Trata exibição dos campos personalizados
+    const instIsOutro = editInst.options[editInst.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperEditInstituicaoPersonalizada").style.display = instIsOutro ? "block" : "none";
+    editInstPers.value = instIsOutro ? (denuncia.instituicao_personalizada || "") : "";
+
+    const tipoIsOutro = editTipo.options[editTipo.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperEditTipoPersonalizado").style.display = tipoIsOutro ? "block" : "none";
+    editTipoPers.value = tipoIsOutro ? (denuncia.tipo_golpe_personalizado || "") : "";
+
+    modalEditar.style.display = "flex";
+  }
+
+  function fecharModalEditar() {
+    modalEditar.style.display = "none";
+    denunciaSendoEditadaId = null;
+  }
+
+  container.querySelector("#btnFecharModalEditar").addEventListener("click", fecharModalEditar);
+
+  modalEditar.addEventListener("click", (e) => {
+    if (e.target === modalEditar) fecharModalEditar();
+  });
+
+  container.querySelector("#btnSalvarEdicao").addEventListener("click", async () => {
+    modalEditMsg.className = "modal-msg";
+    modalEditMsg.textContent = "";
+
+    const descricao = editDesc.value.trim();
+    const instituicao_id = editInst.value;
+    const tipo_golpe_id = editTipo.value;
+    const instituicao_personalizada = editInstPers.value.trim();
+    const tipo_golpe_personalizado = editTipoPers.value.trim();
+    const estado = editEstado.value;
+
+    if (!descricao || !instituicao_id || !tipo_golpe_id) {
+      modalEditMsg.className = "modal-msg error";
+      modalEditMsg.textContent = "Preencha todos os campos obrigatórios.";
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/denuncias/${denunciaSendoEditadaId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          descricao,
+          instituicao_id,
+          tipo_golpe_id,
+          instituicao_personalizada,
+          tipo_golpe_personalizado,
+          estado
+        })
+      });
+
+      if (response.ok) {
+        modalEditMsg.className = "modal-msg success";
+        modalEditMsg.textContent = "Denúncia atualizada com sucesso!";
+        setTimeout(() => {
+          fecharModalEditar();
+          carregarDenuncias();
+        }, 800);
+      } else {
+        const errData = await response.json();
+        modalEditMsg.className = "modal-msg error";
+        modalEditMsg.textContent = errData.erro || "Erro ao atualizar denúncia.";
+      }
+    } catch (e) {
+      console.error("Erro ao atualizar denúncia:", e);
+      modalEditMsg.className = "modal-msg error";
+      modalEditMsg.textContent = "Erro de conexão com o servidor.";
+    }
+  });
+
+  // ── Gráfico de pizza (Canvas API nativa) ──────────────────────────────
+  const CORES_PIZZA = [
+    "#e8571a", "#f5a623", "#4a90d9", "#7b68ee", "#2ecc71",
+    "#e74c3c", "#1abc9c", "#9b59b6", "#34495e", "#f39c12"
+  ];
+
+  function desenharGraficoPizza(contagem) {
+    const card    = container.querySelector("#graficoCard");
+    const canvas  = container.querySelector("#pizzaCanvas");
+    const legenda = container.querySelector("#graficoLegenda");
+    const banner  = container.querySelector("#graficoBanner");
+    const ctx     = canvas.getContext("2d");
+
+    const entradas = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+    const total    = entradas.reduce((s, [, v]) => s + v, 0);
+
+    if (total === 0) { card.style.display = "none"; return; }
+    card.style.display = "block";
+
+    // ── Desenho do gráfico ────────────────────────────────────────────
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width  / 2;
+    const cy = canvas.height / 2;
+    const r  = Math.min(cx, cy) - 10;
+    const rInterno = r * 0.42;  // furo central (rosquinha)
+
+    let angulo = -Math.PI / 2;  // começa no topo
+
+    entradas.forEach(([, qtd], i) => {
+      const fatia = (qtd / total) * 2 * Math.PI;
+      const cor   = CORES_PIZZA[i % CORES_PIZZA.length];
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, angulo, angulo + fatia);
+      ctx.closePath();
+      ctx.fillStyle = cor;
+      ctx.fill();
+
+      // Borda fina entre fatias
+      ctx.strokeStyle = "#f7f7f8";
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+
+      angulo += fatia;
+    });
+
+    // Furo central — efeito rosquinha (donut chart)
+    ctx.beginPath();
+    ctx.arc(cx, cy, rInterno, 0, 2 * Math.PI);
+    ctx.fillStyle = "#f7f7f8";
+    ctx.fill();
+
+    // Texto central: total de denúncias
+    ctx.fillStyle  = "#111111";
+    ctx.font       = `bold ${Math.round(r * 0.28)}px Sora, sans-serif`;
+    ctx.textAlign  = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(total, cx, cy - 6);
+    ctx.font       = `${Math.round(r * 0.14)}px DM Sans, sans-serif`;
+    ctx.fillStyle  = "#888";
+    ctx.fillText("denúncias", cx, cy + 13);
+
+    // ── Legenda ───────────────────────────────────────────────────────
+    legenda.innerHTML = "";
+    entradas.forEach(([golpe, qtd], i) => {
+      const pct = ((qtd / total) * 100).toFixed(0);
+      const li  = document.createElement("li");
+      li.className = "legenda-item";
+      li.innerHTML = `
+        <span class="legenda-cor" style="background:${CORES_PIZZA[i % CORES_PIZZA.length]}"></span>
+        <span class="legenda-nome">${golpe}</span>
+        <span class="legenda-pct">${pct}%</span>
+      `;
+      legenda.appendChild(li);
+    });
+
+    // ── Banner de alerta contextual ───────────────────────────────────
+    const [golpeTopo, qtdTopo] = entradas[0];
+    const pctTopo = ((qtdTopo / total) * 100).toFixed(0);
+    banner.className = "grafico-banner";
+    banner.innerHTML = `
+      <span><strong>${golpeTopo}</strong> representa <strong>${pctTopo}%</strong> das suas
+      denúncias. Fique alerta a contatos simulando essa abordagem.</span>
+    `;
+  }
+
+  // ── Gráfico de pizza por Regiões do Brasil ────────────────────────
+  const CORES_REGIOES = {
+    "Sudeste": "#e8571a",      // Laranja corporativo
+    "Sul": "#3b82f6",          // Azul
+    "Nordeste": "#10b981",     // Verde
+    "Centro-Oeste": "#f5a623", // Amarelo/Laranja claro
+    "Norte": "#8b5cf6"         // Roxo
+  };
+
+  function desenharGraficoRegioesPizza(contagem) {
+    const card    = container.querySelector("#regioesCard");
+    const canvas  = container.querySelector("#regioesCanvas");
+    const legenda = container.querySelector("#legendaRegioes");
+    const ctx     = canvas.getContext("2d");
+
+    const entradas = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+    const total    = entradas.reduce((s, [, v]) => s + v, 0);
+
+    if (total === 0) { card.style.display = "none"; return; }
+    card.style.display = "block";
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const cx = canvas.width  / 2;
+    const cy = canvas.height / 2;
+    const r  = Math.min(cx, cy) - 10;
+    const rInterno = r * 0.42;
+
+    let angulo = -Math.PI / 2;
+
+    entradas.forEach(([regiao, qtd]) => {
+      const fatia = (qtd / total) * 2 * Math.PI;
+      const cor   = CORES_REGIOES[regiao] || "#9ca3af";
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, angulo, angulo + fatia);
+      ctx.closePath();
+      ctx.fillStyle = cor;
+      ctx.fill();
+
+      // Borda fina
+      ctx.strokeStyle = "#f7f7f8";
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+
+      angulo += fatia;
+    });
+
+    // Furo central
+    ctx.beginPath();
+    ctx.arc(cx, cy, rInterno, 0, 2 * Math.PI);
+    ctx.fillStyle = "#f7f7f8";
+    ctx.fill();
+
+    // Texto central
+    ctx.fillStyle  = "#111111";
+    ctx.font       = `bold ${Math.round(r * 0.28)}px Sora, sans-serif`;
+    ctx.textAlign  = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(total, cx, cy - 6);
+    ctx.font       = `${Math.round(r * 0.14)}px DM Sans, sans-serif`;
+    ctx.fillStyle  = "#888";
+    ctx.fillText("denúncias", cx, cy + 13);
+
+    // Legenda
+    legenda.innerHTML = "";
+    entradas.forEach(([regiao, qtd]) => {
+      const pct = ((qtd / total) * 100).toFixed(0);
+      const li  = document.createElement("li");
+      li.className = "legenda-item";
+      li.innerHTML = `
+        <span class="legenda-cor" style="background:${CORES_REGIOES[regiao] || "#9ca3af"}"></span>
+        <span class="legenda-nome">${regiao}</span>
+        <span class="legenda-pct">${pct}% (${qtd})</span>
+      `;
+      legenda.appendChild(li);
+    });
+  }
+
+  // ── Denúncias ─────────────────────────────────────────────────────────
   let todasAsDenuncias = [];
 
   async function carregarDenuncias() {
     const lista = container.querySelector("#listaDenuncias");
-    const painelAlerta = container.querySelector("#painelAlerta");
 
     lista.innerHTML = `
       <div class="skeleton"></div>
@@ -309,37 +740,44 @@ export default () => {
     `;
 
     try {
-      const response = await fetch("http://localhost:5000/api/denuncias", {
+      // por_pagina=100 garante dados completos para o gráfico
+      const response = await fetch("http://localhost:5000/api/denuncias?por_pagina=100", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const denuncias = await response.json();
+      const json     = await response.json();
+      // Compatível tanto com a resposta paginada {dados:[]} quanto array direto
+      const denuncias = Array.isArray(json) ? json : (json.dados ?? []);
       todasAsDenuncias = denuncias;
-      lista.innerHTML = "";
+      lista.innerHTML  = "";
 
-      // Modus Operandi dinâmico
-      if (denuncias.length > 0) {
-        const contagem = {};
-        denuncias.forEach((d) => {
-          contagem[d.tipo_golpe] = (contagem[d.tipo_golpe] || 0) + 1;
-        });
+      // ── Gráfico ───────────────────────────────────────────────────
+      const contagem = {};
+      denuncias.forEach((d) => {
+        contagem[d.tipo_golpe] = (contagem[d.tipo_golpe] || 0) + 1;
+      });
+      desenharGraficoPizza(contagem);
 
-        let golpeMaisComum = "";
-        let maxOcorrencias = 0;
-        for (const [golpe, qtd] of Object.entries(contagem)) {
-          if (qtd > maxOcorrencias) {
-            maxOcorrencias = qtd;
-            golpeMaisComum = golpe;
+      // ── Distribuição Geográfica por Região (Pizza) ────────────────────
+      const MAPA_REGIOES = {
+        SP: "Sudeste", RJ: "Sudeste", MG: "Sudeste", ES: "Sudeste",
+        PR: "Sul", SC: "Sul", RS: "Sul",
+        BA: "Nordeste", PE: "Nordeste", CE: "Nordeste", RN: "Nordeste", PB: "Nordeste", AL: "Nordeste", SE: "Nordeste", PI: "Nordeste", MA: "Nordeste",
+        DF: "Centro-Oeste", GO: "Centro-Oeste", MT: "Centro-Oeste", MS: "Centro-Oeste",
+        AM: "Norte", PA: "Norte", RO: "Norte", RR: "Norte", AC: "Norte", TO: "Norte", AP: "Norte"
+      };
+
+      const contagemRegioes = {};
+      denuncias.forEach((d) => {
+        if (d.estado) {
+          const regiao = MAPA_REGIOES[d.estado.toUpperCase()];
+          if (regiao) {
+            contagemRegioes[regiao] = (contagemRegioes[regiao] || 0) + 1;
           }
         }
+      });
 
-        painelAlerta.style.display = "block";
-        painelAlerta.innerHTML = `
-          <strong>Aviso de Segurança:</strong> A abordagem mais relatada em suas denúncias é <strong>${golpeMaisComum}</strong>. Fique atento a contatos simulando esta situação.
-        `;
-      } else {
-        painelAlerta.style.display = "none";
-      }
+      desenharGraficoRegioesPizza(contagemRegioes);
 
       if (denuncias.length === 0) {
         lista.innerHTML = `
@@ -355,18 +793,34 @@ export default () => {
           ? d.instituicao_personalizada
           : d.instituicao;
 
+        const nomeTipoGolpe = d.tipo_golpe === "Outro" && d.tipo_golpe_personalizado
+          ? d.tipo_golpe_personalizado
+          : d.tipo_golpe;
+
         lista.innerHTML += `
           <div class="cardDenuncia">
-            <h3>${d.telefone}</h3>
-            <span class="badge-tipo">${d.tipo_golpe}</span>
+            <div class="card-header-linha">
+              <h3>${d.telefone}</h3>
+              <span class="badge-tipo">${nomeTipoGolpe}</span>
+            </div>
             <div class="card-meta">
               <span><strong>Instituição:</strong> ${nomeInstituicao}</span>
-              <span><strong>Tipo:</strong> ${d.tipo_golpe}</span>
+              <span><strong>Tipo:</strong> ${nomeTipoGolpe}</span>
+              ${d.estado ? `<span><strong>Estado:</strong> ${d.estado}</span>` : ""}
             </div>
             <p class="card-descricao">${d.descricao}</p>
-            <button class="btnExcluir" data-id="${d.id}">Excluir</button>
+            <div class="card-acoes">
+              <button class="btnEditar btn-editar-card" data-id="${d.id}">Editar</button>
+              <button class="btnExcluir btn-excluir-card" data-id="${d.id}">Excluir</button>
+            </div>
           </div>
         `;
+      });
+
+      lista.querySelectorAll(".btnEditar").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          abrirModalEditar(btn.dataset.id);
+        });
       });
 
       lista.querySelectorAll(".btnExcluir").forEach((btn) => {
@@ -398,7 +852,7 @@ export default () => {
     }
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Telefone,Tipo de Golpe,Instituição,Descrição,Data\n";
+    csvContent += "Telefone,Tipo de Golpe,Instituição,Descrição,Estado,Data\n";
 
     todasAsDenuncias.forEach((d) => {
       const instituicao = d.instituicao === "Outro" && d.instituicao_personalizada
@@ -409,9 +863,10 @@ export default () => {
       const tipo = d.tipo_golpe.replace(/"/g, '""');
       const inst = instituicao.replace(/"/g, '""');
       const desc = d.descricao.replace(/\n/g, " ").replace(/"/g, '""');
+      const est = (d.estado || "").replace(/"/g, '""');
       const data = d.data_denuncia;
 
-      csvContent += `"${tel}","${tipo}","${inst}","${desc}","${data}"\n`;
+      csvContent += `"${tel}","${tipo}","${inst}","${desc}","${est}","${data}"\n`;
     });
 
     const encodedUri = encodeURI(csvContent);

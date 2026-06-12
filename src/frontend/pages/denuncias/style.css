@@ -161,6 +161,9 @@
 .select-wrapper select {
   cursor: pointer;
   padding-right: 2.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 .select-wrapper::after {
