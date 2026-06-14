@@ -2,18 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "main.py",
+      "src": "src/backend/main.py",
       "use": "@vercel/python"
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "main.py"
+      "destination": "src/backend/main.py"
     },
     {
       "source": "/(.*)",
-      "destination": "/$1"
+      "destination": "src/frontend/$1"
     }
   ]
 }
