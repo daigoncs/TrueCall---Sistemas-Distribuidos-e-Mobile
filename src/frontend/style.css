@@ -31,10 +31,17 @@ body {
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Mantém a logo na esquerda e botões na direita */
+  justify-content: space-between; 
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.topbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap; /* adiciona isso */
 }
 
 .topbar-brand {

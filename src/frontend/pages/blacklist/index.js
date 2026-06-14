@@ -7,9 +7,8 @@ export default () => {
       <nav class="topbar">
         <span class="topbar-brand">True<span>Call</span></span>
         <div class="topbar-menu">
-          <button id="btnVoltarDashboard" class="btn-logout btn-secondary">Painel Principal</button>
           <button id="btnIrQuiz" class="btn-logout btn-secondary">Simulador de Golpes</button>
-          <button id="logout" class="btn-logout">Sair</button>
+          <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
         </div>
       </nav>
 
@@ -37,20 +36,8 @@ export default () => {
     return container;
   }
 
-  container
-    .querySelector("#btnVoltarDashboard")
-    .addEventListener("click", () => {
-      window.location.hash = "#dashboard";
-    });
-
   container.querySelector("#btnIrQuiz").addEventListener("click", () => {
     window.location.hash = "#quiz";
-  });
-
-  container.querySelector("#logout").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    window.location.hash = "#login";
   });
 
   async function carregarListaNegra() {
@@ -59,7 +46,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/denuncias/publico/recentes",
+        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/publico/recentes",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -113,6 +100,12 @@ export default () => {
       `;
     }
   }
+
+  container.querySelectorAll("#btnVoltar, #btnVoltar2").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      window.location.hash = "#dashboard";
+    });
+  });
 
   carregarListaNegra();
   return container;

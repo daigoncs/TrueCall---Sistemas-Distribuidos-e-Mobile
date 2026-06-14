@@ -112,7 +112,7 @@ export default () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -273,7 +273,7 @@ export default () => {
       btnConsultar.disabled = true;
       btnConsultar.innerText = "Verificando...";
 
-      const response = await fetch(`http://localhost:5000/api/denuncias/publico/verificar/${telefoneLimpo}`);
+      const response = await fetch(`https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/publico/verificar/${telefoneLimpo}`);
       const data = await response.json();
 
       resultadoConsulta.style.display = "block";
