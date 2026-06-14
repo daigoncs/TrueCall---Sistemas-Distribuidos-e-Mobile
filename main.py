@@ -2,7 +2,7 @@ import os
 import logging
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, app
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -82,9 +82,8 @@ def create_app(test_config=None):
         }
 
     init_db(app)
-
     return app
 
-if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True, port=5000)
+    if __name__ == "__main__":
+        app.run(debug=True, port=5000)
