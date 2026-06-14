@@ -191,7 +191,7 @@ export default () => {
 
   async function carregarInstituicoes() {
     const response = await fetch(
-      "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes",
+      "/api/instituicoes",
     );
     const dados = await response.json();
     selInst.innerHTML =
@@ -201,7 +201,7 @@ export default () => {
 
   async function carregarTipos() {
     const response = await fetch(
-      "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/tipos-golpe",
+      "/api/tipos-golpe",
     );
     const dados = await response.json();
     selTipo.innerHTML =
@@ -234,7 +234,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias",
+        "/api/denuncias",
         {
           method: "POST",
           headers: {

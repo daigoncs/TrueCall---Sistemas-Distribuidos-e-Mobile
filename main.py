@@ -2,7 +2,7 @@ import os
 import logging
 
 from dotenv import load_dotenv
-from flask import Flask, app
+from flask import Flask
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
