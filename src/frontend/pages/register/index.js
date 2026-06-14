@@ -74,13 +74,16 @@ export default () => {
     }
 
     try {
-      const response = await fetch("/api/auth/registrar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/auth/registrar",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nome, email, senha }),
         },
-        body: JSON.stringify({ nome, email, senha }),
-      });
+      );
 
       const data = await response.json();
 
@@ -93,7 +96,6 @@ export default () => {
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
       window.location.hash = "#dashboard";
-
     } catch (error) {
       msg.className = "message errorMessage";
       msg.innerHTML = error.message;

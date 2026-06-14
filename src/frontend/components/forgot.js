@@ -45,7 +45,7 @@ export default () => {
 
   formForgot.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
+
     msgAlert.className = "message";
     msgAlert.innerHTML = "";
 
@@ -56,13 +56,16 @@ export default () => {
       btnEnviar.innerText = "Enviando...";
 
       // Requisição para a sua API do Backend
-      const response = await fetch("http://localhost:5000/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/auth/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
         },
-        body: JSON.stringify({ email }),
-      });
+      );
 
       const data = await response.json();
 
@@ -71,9 +74,9 @@ export default () => {
       }
 
       msgAlert.className = "message successMessage";
-      msgAlert.innerHTML = "E-mail de recuperação enviado com sucesso! Verifique sua caixa de entrada.";
+      msgAlert.innerHTML =
+        "E-mail de recuperação enviado com sucesso! Verifique sua caixa de entrada.";
       forgotEmail.value = ""; // Limpa o campo após o sucesso
-
     } catch (error) {
       msgAlert.className = "message errorMessage";
       msgAlert.innerHTML = error.message;

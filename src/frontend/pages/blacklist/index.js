@@ -48,7 +48,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "/api/denuncias/publico/recentes",
+        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/publico/recentes",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
