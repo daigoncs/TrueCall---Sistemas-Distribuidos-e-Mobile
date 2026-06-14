@@ -4,69 +4,67 @@ export default () => {
   const templateLogin = `
     <div class="login-page-container">
       
-      <form class="container login-box">
+      <div class="container dynamic-box">
 
         <div class="form-switch">
-          <a href="#login" class="active">Entrar</a>
-          <a href="#register">Criar conta</a>
+          <button id="tab-entrar" class="tab-btn active">Entrar</button>
+          <button id="tab-consulta" class="tab-btn">Consulta Rápida</button>
         </div>
 
-        <h2> Entre na sua conta </h2>
+        <form class="login-box-content" id="box-login">
+          <h2> Entre na sua conta </h2>
 
-        <input
-          type="email"
-          class="input Email"
-          id="inputEmail"
-          placeholder="Insira seu Email"
-        />
+          <input
+            type="email"
+            class="input Email"
+            id="inputEmail"
+            placeholder="Insira seu Email"
+          />
 
-        <br>
+          <br>
 
-        <input
-          type="password"
-          class="input Senha"
-          id="inputSenha"
-          placeholder="Insira sua senha"
-        />
+          <input
+            type="password"
+            class="input Senha"
+            id="inputSenha"
+            placeholder="Insira sua senha"
+          />
 
-        <br>
+          <br>
 
-        <a href="#forgot" class="forgot-link">Esqueci minha senha</a>
+          <a href="#forgot" class="forgot-link">Esqueci minha senha</a>
 
-        <p id="message" class="message"></p>
+          <p id="message" class="message"></p>
 
-        <br>
+          <br>
 
-        <button
-          class="btn entrar"
-          id="btn-Entrar"
-        >
-          Entrar
-        </button>
+          <button class="btn entrar" id="btn-Entrar">
+            Entrar
+          </button>
 
-        <p class="bottom-link">
-          Não tem conta? <a href="#register">Cadastre-se grátis</a>
-        </p>
+          <p class="bottom-link">
+            Não tem conta? <a href="#register">Cadastre-se grátis</a>
+          </p>
+        </form>
 
-      </form>
+        <div class="consulta-box-content" id="box-consulta" style="display: none;">
+          <h2>Consulta Rápida</h2>
+          <p class="consulta-subtitulo">Verifique se um número de telefone é seguro antes de atender ou responder.</p>
+          
+          <input
+            type="tel"
+            id="inputConsultaTelefone"
+            class="input"
+            placeholder="Digite o número suspeito"
+          />
+          
+          <div id="resultadoConsulta" class="resultado-consulta" style="display: none;"></div>
 
-      <!-- Consulta Rapida Publica -->
-      <div class="container consulta-box">
-        <h2>Consulta Rápida</h2>
-        <p class="consulta-subtitulo">Verifique se um número de telefone é seguro antes de atender ou responder.</p>
-        
-        <input
-          type="tel"
-          id="inputConsultaTelefone"
-          class="input"
-          placeholder="Digite o número suspeito"
-        />
-        
-        <div id="resultadoConsulta" class="resultado-consulta" style="display: none;"></div>
+          <button id="btnConsultar" class="btn entrar">
+            Verificar Número
+          </button>
+        </div>
 
-        <button id="btnConsultar" class="btn entrar">
-          Verificar Número
-        </button>
       </div>
 
     </div>
@@ -74,12 +72,33 @@ export default () => {
 
   containerLogin.innerHTML = templateLogin;
 
+
+  const tabEntrar = containerLogin.querySelector("#tab-entrar");
+  const tabConsulta = containerLogin.querySelector("#tab-consulta");
+  const boxLogin = containerLogin.querySelector("#box-login");
+  const boxConsulta = containerLogin.querySelector("#box-consulta");
+
+  // Função para alternar as abas
+  tabEntrar.addEventListener("click", () => {
+    tabEntrar.classList.add("active");
+    tabConsulta.classList.remove("active");
+    boxLogin.style.display = "block";
+    boxConsulta.style.display = "none";
+  });
+
+  tabConsulta.addEventListener("click", () => {
+    tabConsulta.classList.add("active");
+    tabEntrar.classList.remove("remove"); 
+    tabEntrar.classList.remove("active");
+    boxLogin.style.display = "none";
+    boxConsulta.style.display = "block";
+  });
+
   const loginEmail = containerLogin.querySelector("#inputEmail");
   const loginSenha = containerLogin.querySelector("#inputSenha");
   const btnEntrar = containerLogin.querySelector("#btn-Entrar");
   const msgAlert = containerLogin.querySelector("#message");
 
-  // Lógica do Login
   btnEntrar.addEventListener("click", async (e) => {
     e.preventDefault();
     msgAlert.className = "message";
@@ -129,7 +148,7 @@ export default () => {
   const btnConsultar = containerLogin.querySelector("#btnConsultar");
   const resultadoConsulta = containerLogin.querySelector("#resultadoConsulta");
 
-  // Mascara automatica para o telefone de consulta (adaptativa)
+  // Mascara automatica para o telefone de consulta
   inputConsulta.addEventListener("input", (e) => {
     let valor = e.target.value.replace(/\D/g, "");
 
@@ -150,7 +169,6 @@ export default () => {
         e.target.value = `${valor.slice(0, 4)}-${valor.slice(4)}`;
       }
     } else {
-      // Celular (3º dígito = '9') → 11 total | Fixo → 10 total
       const ehCelular = valor.length >= 3 && valor[2] === "9";
       const limite = ehCelular ? 11 : 10;
       if (valor.length > limite) valor = valor.slice(0, limite);
@@ -162,10 +180,8 @@ export default () => {
       } else if (valor.length <= 6) {
         e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
       } else if (valor.length <= 10) {
-        // Fixo: (11) 3333-4444  |  Celular ainda construindo
         e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
       } else {
-        // Celular completo: (11) 99999-4444
         e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
       }
     }
@@ -173,8 +189,6 @@ export default () => {
 
   function obterDicasDefesa(tipos) {
     const recomendacoes = [];
-
-    // Mapeamento de palavras-chave para blocos de dicas de seguranca
     const mapDicas = {
       "Falsa Central Bancária": [
         "Desligue imediatamente. Bancos nunca ligam solicitando transferências, digitação de senhas ou códigos de segurança por telefone.",
@@ -182,11 +196,11 @@ export default () => {
       ],
       "PIX Fraudulento": [
         "Não realize transferências urgentes baseadas em pedidos por mensagens, mesmo que pareça ser um conhecido. Confirme a identidade por ligação de voz antes.",
-        "Em caso de fraude PIX, entre em contato imediatamente com seu banco para solicitar o MED (Mecanismo Especial de Devolução [sistema de bloqueio rápido de valores fraudados]) em até 80 dias."
+        "Em caso de fraude PIX, entre em contato imediatamente com seu banco para solicitar o MED (Mecanismo Especial de Devolução) em até 80 dias."
       ],
       "Cartão Clonado": [
         "Se suspeitar de clonagem, bloqueie imediatamente o cartão físico pelo aplicativo oficial do seu banco.",
-        "Lembre-se: os bancos nunca enviam motoboys ou representantes para recolher cartões físicos em sua residência, mesmo sob alegação de perícia por fraude."
+        "Lembre-se: os bancos nunca enviam motoboys ou representantes para recolher cartões físicos em sua residência."
       ],
       "Empréstimo Falso": [
         "Desconfie de ofertas de empréstimos facilitados que exigem pagamentos adiantados a pretexto de taxas de cartório, fiador ou seguros.",
@@ -218,7 +232,7 @@ export default () => {
     if (!ativouDica) {
       recomendacoes.push(
         "Nunca compartilhe códigos de autenticação (como SMS ou tokens) com terceiros.",
-        "Desconfie de mensagens urgentes que contenham links externos para atualização cadastral ou resgate de prêmios fictícios."
+        "Desconfie de mensagens urgentes que contenham links externos para atualização cadastral."
       );
     }
 
@@ -227,7 +241,7 @@ export default () => {
     return `
       <div class="defesa-contextual" style="margin-top: 12px; padding: 10px 12px; background-color: #ffffff; border: 1.5px solid #fecaca; border-left: 4px solid #991b1b; border-radius: 6px; text-align: left;">
         <div style="font-weight: bold; color: #991b1b; font-size: 0.8rem; margin-bottom: 6px; font-family: 'Sora', sans-serif;">
-          Guia de Defesa Recomendado
+          Guia de Defesa Recommended
         </div>
         <ul style="margin: 0; padding-left: 16px; font-size: 0.775rem; color: #7f1d1d; line-height: 1.4;">
           ${dicasUnicas.map(dica => `<li style="margin-bottom: 4px;">${dica}</li>`).join("")}
@@ -245,18 +259,17 @@ export default () => {
     const telefoneVal = inputConsulta.value;
     const telefoneLimpo = telefoneVal.replace(/\D/g, "");
 
-    // Valida: 0800 (11 dígitos), 4004/3003 (8), celular (11), fixo (10)
     const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
     const tamanhoValido = (
-      telefoneLimpo.length === 8   ||   // 4004/3003
-      telefoneLimpo.length === 11 && telefoneLimpo.startsWith("0800") || // 0800
+      telefoneLimpo.length === 8    ||   
+      telefoneLimpo.length === 11 && telefoneLimpo.startsWith("0800") || 
       (ehCelular ? telefoneLimpo.length === 11 : telefoneLimpo.length === 10)
     );
 
     if (!tamanhoValido) {
       resultadoConsulta.style.display = "block";
       resultadoConsulta.classList.add("erro");
-      resultadoConsulta.innerHTML = "Por favor, digite um número válido (celular, fixo, 0800 ou 4004).";
+      resultadoConsulta.innerHTML = "Por favor, digite um número válido.";
       return;
     }
 

@@ -88,12 +88,13 @@ export default () => {
         throw new Error(data.erro);
       }
 
-      msg.className = "message successMessage";
-      msg.innerHTML = "Cadastro realizado com sucesso!";
+      // Salva a sessão do usuário para ele não precisar fazer login logo após se cadastrar
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      setTimeout(() => {
-        window.location.hash = "#login";
-      }, 1500);
+      // Vai direto para o dashboard sem delay e sem mensagem de sucesso
+      window.location.hash = "#dashboard";
+
     } catch (error) {
       msg.className = "message errorMessage";
       msg.innerHTML = error.message;

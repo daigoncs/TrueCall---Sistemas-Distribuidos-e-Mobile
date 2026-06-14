@@ -1,4 +1,4 @@
-import routes from "./routes.js";
+import routes from "../frontend/components/routes.js";
 
 const app = document.getElementById("app");
 
