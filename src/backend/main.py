@@ -40,11 +40,16 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
-    allowed_origins = os.environ.get(
-        "CORS_ORIGINS",
-        "http://localhost:8000,http://127.0.0.1:5500,http://localhost:5500"
-    )
-    CORS(app, origins=allowed_origins.split(","), supports_credentials=True)
+    # CORREÇÃO DO CORS: Obtém as origens permitidas, mas define "*" (tudo liberado) como padrão
+    allowed_origins = os.environ.get("CORS_ORIGINS", "*")
+    
+    if allowed_origins == "*":
+        # Se for para liberar tudo, ativa globalmente sem mandar o 'supports_credentials=True' 
+        # (pois navegadores bloqueiam a combinação de credenciais com o caractere curinga '*')
+        CORS(app, origins="*")
+    else:
+        CORS(app, origins=allowed_origins.split(","), supports_credentials=True)
+        
     app.config['CORS_HEADERS'] = 'Content-Type'
 
     limiter.init_app(app)
