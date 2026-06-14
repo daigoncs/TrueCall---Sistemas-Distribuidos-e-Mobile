@@ -63,6 +63,86 @@ body {
   gap: 1rem; /* Espaço horizontal entre os botões */
 }
 
+/* ── Hambúrguer ── */
+.topbar-hamburguer {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.topbar-hamburguer span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+}
+
+/* Animação X quando aberto */
+.topbar-hamburguer.aberto span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.topbar-hamburguer.aberto span:nth-child(2) {
+  opacity: 0;
+}
+.topbar-hamburguer.aberto span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Dropdown */
+.topbar-dropdown {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 60px;
+  right: 1rem;
+  background: #1a1a1a;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem;
+  gap: 0.25rem;
+  min-width: 200px;
+  z-index: 200;
+  animation: fadeIn 0.15s ease;
+}
+
+.topbar-dropdown.aberto {
+  display: flex;
+}
+
+.topbar-dropdown .btn-logout {
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: 8px;
+  border-color: transparent;
+  padding: 0.65rem 0.9rem;
+}
+
+.topbar-dropdown .btn-logout:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .topbar-hamburguer {
+    display: flex;
+  }
+
+  .topbar-menu {
+    display: none; /* esconde o menu normal */
+  }
+}
+
 @media (min-width: 1280px) {
   .topbar {
     padding: 0 5rem;

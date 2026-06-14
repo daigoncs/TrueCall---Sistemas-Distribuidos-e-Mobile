@@ -216,7 +216,6 @@
   }
 }
 
-/* ── Aside: Numeros Confiaveis ── */
 .coluna-numeros {
   background: #ffffff;
   border: 1.5px solid #ebebeb;
@@ -275,7 +274,7 @@
 
 .numeros-subtitulo {
   font-size: 0.78rem;
-  color: #888;
+  color: #333;
   margin-bottom: 1rem;
   line-height: 1.45;
 }
@@ -378,7 +377,7 @@
 .numeros-aviso {
   margin-top: 0.9rem;
   font-size: 0.75rem;
-  color: #888;
+  color: #333;
   line-height: 1.5;
   padding: 0.55rem 0.75rem;
   background: #fff8f5;

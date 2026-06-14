@@ -6,10 +6,24 @@ export default () => {
 
 <nav class="topbar">
   <span class="topbar-brand">True<span>Call</span></span>
+
+  <!-- Menu normal (desktop) -->
   <div class="topbar-menu">
     <button id="btnIrBlacklist" class="btn-logout btn-secondary">Blacklist de Golpes</button>
     <button id="btnIrQuiz" class="btn-logout btn-secondary">Simulador de Golpes</button>
     <button id="logout" class="btn-logout">Sair</button>
+  </div>
+
+  <!-- Hambúrguer (mobile) -->
+  <button class="topbar-hamburguer" id="btnHamburguer" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <div class="topbar-dropdown" id="topbarDropdown">
+    <button id="btnIrBlacklistMobile" class="btn-logout btn-secondary">Blacklist de Golpes</button>
+    <button id="btnIrQuizMobile" class="btn-logout btn-secondary">Simulador de Golpes</button>
+    <button id="logoutMobile" class="btn-logout">Sair</button>
   </div>
 </nav>
 
@@ -450,7 +464,9 @@ export default () => {
   async function prepararSelectsEdicao() {
     if (!instituicoesCarregadas) {
       try {
-        const response = await fetch("https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes");
+        const response = await fetch(
+          "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes",
+        );
         const dados = await response.json();
         editInst.innerHTML =
           `<option value="">Selecionar...</option>` +
@@ -465,7 +481,9 @@ export default () => {
 
     if (!tiposCarregados) {
       try {
-        const response = await fetch("https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/tipos-golpe");
+        const response = await fetch(
+          "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/tipos-golpe",
+        );
         const dados = await response.json();
         editTipo.innerHTML =
           `<option value="">Selecionar...</option>` +
@@ -915,10 +933,13 @@ export default () => {
       lista.querySelectorAll(".btnExcluir").forEach((btn) => {
         btn.addEventListener("click", async () => {
           if (!confirm("Excluir denúncia?")) return;
-          await fetch(`https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${btn.dataset.id}`, {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await fetch(
+            `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${btn.dataset.id}`,
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
           carregarDenuncias();
         });
       });

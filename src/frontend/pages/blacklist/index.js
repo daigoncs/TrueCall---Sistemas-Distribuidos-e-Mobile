@@ -40,6 +40,8 @@ export default () => {
     window.location.hash = "#quiz";
   });
 
+
+
   async function carregarListaNegra() {
     const feed = container.querySelector("#feedBlacklist");
     if (!feed) return;

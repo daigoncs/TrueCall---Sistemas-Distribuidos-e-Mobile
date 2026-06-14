@@ -3,11 +3,26 @@ export default () => {
 
   container.innerHTML = `
     <div class="denuncia-page">
-
       <nav class="topbar">
-        <span class="topbar-brand">True<span>Call</span></span>
-        <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
-      </nav>
+      <span class="topbar-brand">True<span>Call</span></span>
+
+  <!-- Menu normal (desktop) -->
+  <div class="topbar-menu">
+       <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
+  </div>
+
+  <!-- Hambúrguer (mobile) -->
+  <button class="topbar-hamburguer" id="btnHamburguer" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <div class="topbar-dropdown" id="topbarDropdown">
+    <button id="btnIrBlacklistMobile" class="btn-logout btn-secondary">Blacklist de Golpes</button>
+    <button id="btnIrQuizMobile" class="btn-logout btn-secondary">Simulador de Golpes</button>
+    <button id="logoutMobile" class="btn-logout">Sair</button>
+  </div>
+</nav>
 
       <main class="denuncia-main">
 
@@ -175,7 +190,9 @@ export default () => {
   });
 
   async function carregarInstituicoes() {
-    const response = await fetch("https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes");
+    const response = await fetch(
+      "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes",
+    );
     const dados = await response.json();
     selInst.innerHTML =
       `<option value="">Selecionar...</option>` +
@@ -183,7 +200,9 @@ export default () => {
   }
 
   async function carregarTipos() {
-    const response = await fetch("https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/tipos-golpe");
+    const response = await fetch(
+      "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/tipos-golpe",
+    );
     const dados = await response.json();
     selTipo.innerHTML =
       `<option value="">Selecionar...</option>` +
@@ -214,25 +233,28 @@ export default () => {
     }
 
     try {
-      const response = await fetch("https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            telefone: telefoneVal,
+            descricao: container.querySelector("#descricao").value,
+            instituicao_id: container.querySelector("#instituicao").value,
+            tipo_golpe_id: container.querySelector("#tipoGolpe").value,
+            instituicao_personalizada: container.querySelector(
+              "#instituicaoPersonalizada",
+            ).value,
+            tipo_golpe_personalizado:
+              container.querySelector("#tipoPersonalizado").value,
+            estado: container.querySelector("#estado").value,
+          }),
         },
-        body: JSON.stringify({
-          telefone: telefoneVal,
-          descricao: container.querySelector("#descricao").value,
-          instituicao_id: container.querySelector("#instituicao").value,
-          tipo_golpe_id: container.querySelector("#tipoGolpe").value,
-          instituicao_personalizada: container.querySelector(
-            "#instituicaoPersonalizada",
-          ).value,
-          tipo_golpe_personalizado:
-            container.querySelector("#tipoPersonalizado").value,
-          estado: container.querySelector("#estado").value,
-        }),
-      });
+      );
 
       const data = await response.json();
 
