@@ -1,296 +1,66 @@
-.denuncia-main {
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 2.25rem 1.5rem 4rem;
+/* ── Topbar Unificada (Dashboard + Denúncia) ── */
+.topbar {
+  background: #111111;
+  padding: 0 1.5rem; /* Base inicial batendo com os paddings mobile das duas páginas */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-@media (min-width: 900px) {
-  .denuncia-main {
-    max-width: 100%;
-    padding: 2.5rem 3rem 4rem;
-  }
+.topbar-brand {
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
 
-  .denuncia-card {
-    max-width: 720px;
+.topbar-brand span {
+  color: #e8571a;
+}
+
+/* Container de ações na direita para evitar que quebre em coluna */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ── Alinhamento Responsivo Fino (Sincronizado com os Breakpoints da Denúncia) ── */
+@media (min-width: 900px) {
+  .topbar {
+    padding: 0 3rem; /* Alinha perfeitamente com o padding da .denuncia-main e .dashboard-main nesta resolução */
   }
 }
 
 @media (min-width: 1280px) {
-  .denuncia-main {
-    padding: 2.5rem 5rem 4rem;
+  .topbar {
+    padding: 0 5rem; 
   }
+}
 
-  .denuncia-card {
-    max-width: 860px;
-  }
-} 
-
-.denuncia-header {
+.btn-logout {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-}
-
-.btn-voltar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: #ffffff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #111111;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-  text-decoration: none;
-}
-
-.btn-voltar:hover {
-  background: #f5f5f5;
-  border-color: #c0c0c0;
-}
-
-.denuncia-header h1 {
-  font-family: "Sora", sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #111111;
-}
-
-.btn-voltar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: #ffffff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #111111;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-  text-decoration: none;
-}
-
-.btn-voltar:hover {
-  background: #f5f5f5;
-  border-color: #c0c0c0;
-}
-
-.denuncia-header h1 {
-  font-family: "Sora", sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #111111;
-}
-
-.denuncia-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 2rem 1.75rem;
-  border: 1.5px solid #ebebeb;
-}
-
-.denuncia-card label {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: #6b6b6b;
-  margin-bottom: 0.4rem;
-}
-
-.denuncia-card .input,
-.denuncia-card textarea,
-.denuncia-card select {
-  width: 100%;
-  background: #fafafa;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  font-family: "DM Sans", sans-serif;
-  font-size: 0.95rem;
-  color: #111111;
-  outline: none;
-  margin-bottom: 1.25rem;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background 0.2s;
-  appearance: none;
-  -webkit-appearance: none;
-  box-sizing: border-box;
-}
-
-.denuncia-card .input::placeholder,
-.denuncia-card textarea::placeholder {
-  color: #b0b0b0;
-}
-
-.denuncia-card .input:hover,
-.denuncia-card textarea:hover,
-.denuncia-card select:hover {
-  border-color: #c0c0c0;
-  background: #ffffff;
-}
-
-.denuncia-card .input:focus,
-.denuncia-card textarea:focus,
-.denuncia-card select:focus {
-  border-color: #e8571a;
-  box-shadow: 0 0 0 3px rgba(232, 87, 26, 0.12);
-  background: #ffffff;
-}
-
-.select-wrapper {
-  position: relative;
-}
-
-.select-wrapper select {
-  cursor: pointer;
-  padding-right: 2.5rem;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.select-wrapper::after {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-60%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 6px solid #6b6b6b;
-  margin-bottom: 1.25rem;
-}
-
-.input-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1rem;
-}
-
-.denuncia-card textarea {
-  resize: vertical;
-  min-height: 110px;
-  line-height: 1.55;
-}
-
-.denuncia-msg {
-  font-size: 0.85rem;
-  border-radius: 8px;
-  min-height: 0;
-  transition: all 0.2s;
-  margin-bottom: 0;
-}
-
-.denuncia-msg:not(:empty) {
-  padding: 0.65rem 0.9rem;
-  margin-bottom: 1rem;
-}
-
-.denuncia-msg.success:not(:empty) {
-  background: #f0faf4;
-  color: #1e7a44;
-  border: 1px solid #a8ddb9;
-}
-
-.denuncia-msg.error:not(:empty) {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
-.btn-registrar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  background: #e8571a;
-  color: #ffffff;
-  font-family: "DM Sans", sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  padding: 0.9rem 1rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-bottom: 0.75rem;
-  transition:
-    background 0.2s,
-    transform 0.15s;
-  letter-spacing: 0.01em;
-}
-
-.btn-registrar:hover {
-  background: #cf4c17;
-}
-
-.btn-registrar:active {
-  transform: scale(0.98);
-}
-
-.btn-registrar:disabled {
-  background: #f0b49a;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-cancelar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
+  gap: 0.4rem;
   background: transparent;
-  color: #6b6b6b;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
   font-family: "DM Sans", sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: 0.75rem 1rem;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition:
-    border-color 0.2s,
-    color 0.2s,
-    background 0.2s;
+  white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s;
 }
 
-.btn-cancelar:hover {
-  border-color: #c0c0c0;
-  color: #111111;
-  background: #f9f9f9;
-}
-
-@media (max-width: 480px) {
-  .denuncia-main {
-    padding: 1.5rem 1rem 3rem;
-  }
-
-  .denuncia-card {
-    padding: 1.5rem 1.25rem;
-  }
-
-  .input-row {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
+.btn-logout:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }

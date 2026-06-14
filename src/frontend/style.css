@@ -24,3 +24,84 @@ body {
   justify-content: center;
   padding: 1.5rem;
 }
+
+.topbar {
+  background: #111111;
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Mantém a logo na esquerda e botões na direita */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-brand {
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.topbar-brand span {
+  color: #e8571a;
+}
+
+/* NOVA CLASSE: Força os botões da barra do topo a ficarem sempre em linha */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espaço horizontal entre os botões */
+}
+
+@media (min-width: 1280px) {
+  .topbar {
+    padding: 0 5rem;
+  }
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.btn-logout:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+}
+
+.dashboard-header h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111111;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+

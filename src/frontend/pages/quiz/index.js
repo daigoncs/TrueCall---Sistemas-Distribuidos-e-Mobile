@@ -147,14 +147,14 @@ export default () => {
       <div class="quiz-page">
         <nav class="topbar">
           <span class="topbar-brand">True<span>Call</span></span>
-          <button id="btnVoltar" class="btn-voltar-top">Voltar</button>
+          <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
         </nav>
 
         <main class="quiz-main">
           <div class="quiz-container">
             <div class="quiz-header">
               <h1>Simulador de Golpes</h1>
-              <p class="quiz-subtitulo">Quiz: Você sabe identificar o Golpe da Falsa Central Telefônica?</p>
+              <p class="subtitulo">Quiz: Você sabe identificar o Golpe da Falsa Central Telefônica?</p>
             </div>
 
             <div class="quiz-card">

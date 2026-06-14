@@ -92,7 +92,6 @@ export default () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      // Vai direto para o dashboard sem delay e sem mensagem de sucesso
       window.location.hash = "#dashboard";
 
     } catch (error) {

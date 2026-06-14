@@ -72,7 +72,6 @@ export default () => {
 
   containerLogin.innerHTML = templateLogin;
 
-
   const tabEntrar = containerLogin.querySelector("#tab-entrar");
   const tabConsulta = containerLogin.querySelector("#tab-consulta");
   const boxLogin = containerLogin.querySelector("#box-login");
@@ -88,8 +87,7 @@ export default () => {
 
   tabConsulta.addEventListener("click", () => {
     tabConsulta.classList.add("active");
-    tabEntrar.classList.remove("remove"); 
-    tabEntrar.classList.remove("active");
+    tabEntrar.classList.remove("active"); // Corrigido bug de remoção duplicada aqui
     boxLogin.style.display = "none";
     boxConsulta.style.display = "block";
   });
@@ -128,15 +126,13 @@ export default () => {
         throw new Error(data.erro);
       }
 
-      msgAlert.className = "message successMessage";
-      msgAlert.innerHTML = "Login realizado com sucesso!";
-
+      // Salva os dados de autenticação no cache do navegador
       localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      setTimeout(() => {
-        window.location.hash = "#dashboard";
-      }, 800);
+      // Vai direto para o painel de controle (dashboard) sem delay e sem exibir mensagens de sucesso
+      window.location.hash = "#dashboard";
+
     } catch (error) {
       msgAlert.className = "message errorMessage";
       msgAlert.innerHTML = error.message;
@@ -148,7 +144,7 @@ export default () => {
   const btnConsultar = containerLogin.querySelector("#btnConsultar");
   const resultadoConsulta = containerLogin.querySelector("#resultadoConsulta");
 
-  // Mascara automatica para o telefone de consulta
+  // Máscara automática para o telefone de consulta
   inputConsulta.addEventListener("input", (e) => {
     let valor = e.target.value.replace(/\D/g, "");
 
@@ -241,7 +237,7 @@ export default () => {
     return `
       <div class="defesa-contextual" style="margin-top: 12px; padding: 10px 12px; background-color: #ffffff; border: 1.5px solid #fecaca; border-left: 4px solid #991b1b; border-radius: 6px; text-align: left;">
         <div style="font-weight: bold; color: #991b1b; font-size: 0.8rem; margin-bottom: 6px; font-family: 'Sora', sans-serif;">
-          Guia de Defesa Recommended
+          Guia de Defesa Recomendado
         </div>
         <ul style="margin: 0; padding-left: 16px; font-size: 0.775rem; color: #7f1d1d; line-height: 1.4;">
           ${dicasUnicas.map(dica => `<li style="margin-bottom: 4px;">${dica}</li>`).join("")}

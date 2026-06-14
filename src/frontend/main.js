@@ -1,16 +1,19 @@
-import routes from "../frontend/components/routes.js";
+import { navigateTo } from "./components/routes.js";
 
-const app = document.getElementById("app");
+function renderPage() {
+  const currentHash = window.location.hash || "#login";
 
-function render() {
-  const route = window.location.hash.replace("#", "") || "login";
+  const pageComponent = navigateTo(currentHash);
 
-  app.innerHTML = "";
+  let root = document.getElementById("root") || document.getElementById("app");
 
-  if (routes[route]) {
-    app.appendChild(routes[route]());
+  if (!root) {
+    root = document.body;
   }
+
+  root.innerHTML = "";
+  root.appendChild(pageComponent());
 }
 
-window.addEventListener("hashchange", render);
-window.addEventListener("load", render);
+window.addEventListener("hashchange", renderPage);
+window.addEventListener("load", renderPage);

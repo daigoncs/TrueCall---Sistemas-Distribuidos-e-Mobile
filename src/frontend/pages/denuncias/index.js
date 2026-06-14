@@ -6,6 +6,9 @@ export default () => {
 
       <nav class="topbar">
         <span class="topbar-brand">True<span>Call</span></span>
+        <div class="topbar-menu">
+          <button id="btnSair" class="btn-logout">Sair</button>
+        </div>
       </nav>
 
       <main class="denuncia-main">
@@ -120,17 +123,24 @@ export default () => {
   `;
 
   const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.hash = "#login";
+    return container;
+  }
+
   const msg = container.querySelector("#message");
   const selInst = container.querySelector("#instituicao");
   const inputTel = container.querySelector("#telefone");
 
-  // Máscara adaptativa: celular (9 dígitos) vs. fixo (8 dígitos)
-  // Regra: se o 3º dígito (1º após o DDD) for '9' → celular → 11 dígitos total
-  //        se não for '9'                          → fixo   → 10 dígitos total
+  container.querySelector("#btnSair").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.hash = "#login";
+  });
+
   inputTel.addEventListener("input", (e) => {
     let valor = e.target.value.replace(/\D/g, "");
 
-    // Determina o limite: só decide quando já temos DDD + 1 dígito local
     const ehCelular = valor.length >= 3 && valor[2] === "9";
     const limite = ehCelular ? 11 : 10;
     if (valor.length > limite) valor = valor.slice(0, limite);
@@ -142,10 +152,8 @@ export default () => {
     } else if (valor.length <= 6) {
       e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
     } else if (valor.length <= 10) {
-      // Fixo: (11) 3333-4444  |  Celular ainda construindo: (11) 9999-4444
       e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
     } else {
-      // Celular completo: (11) 99999-4444
       e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
     }
   });
@@ -156,23 +164,15 @@ export default () => {
     charCount.textContent = `${e.target.value.length}/300`;
   });
 
-
-  // Mostra campo personalizada quando "Outro" for selecionado
   selInst.addEventListener("change", () => {
-    const isOutro =
-      selInst.options[selInst.selectedIndex]?.text.toLowerCase() === "outro";
-    container.querySelector("#wrapperPersonalizada").style.display = isOutro
-      ? "block"
-      : "none";
+    const isOutro = selInst.options[selInst.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperPersonalizada").style.display = isOutro ? "block" : "none";
   });
 
   const selTipo = container.querySelector("#tipoGolpe");
   selTipo.addEventListener("change", () => {
-    const isOutro =
-      selTipo.options[selTipo.selectedIndex]?.text.toLowerCase() === "outro";
-    container.querySelector("#wrapperTipoPersonalizado").style.display = isOutro
-      ? "block"
-      : "none";
+    const isOutro = selTipo.options[selTipo.selectedIndex]?.text.toLowerCase() === "outro";
+    container.querySelector("#wrapperTipoPersonalizado").style.display = isOutro ? "block" : "none";
   });
 
   async function carregarInstituicoes() {
@@ -201,7 +201,6 @@ export default () => {
     const telefoneVal = inputTel.value;
     const telefoneLimpo = telefoneVal.replace(/\D/g, "");
 
-    // Valida: celular = 11 dígitos (3º dígito é '9'); fixo = 10 dígitos
     const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
     const tamanhoEsperado = ehCelular ? 11 : 10;
 
@@ -225,18 +224,13 @@ export default () => {
           descricao: container.querySelector("#descricao").value,
           instituicao_id: container.querySelector("#instituicao").value,
           tipo_golpe_id: container.querySelector("#tipoGolpe").value,
-          instituicao_personalizada: container.querySelector(
-            "#instituicaoPersonalizada",
-          ).value,
-          tipo_golpe_personalizado: container.querySelector(
-            "#tipoPersonalizado",
-          ).value,
+          instituicao_personalizada: container.querySelector("#instituicaoPersonalizada").value,
+          tipo_golpe_personalizado: container.querySelector("#tipoPersonalizado").value,
           estado: container.querySelector("#estado").value,
         }),
       });
 
       const data = await response.json();
-
       if (!response.ok) throw new Error(data.erro);
 
       msg.className = "denuncia-msg success";
@@ -251,7 +245,6 @@ export default () => {
     }
   });
 
-  // Dois botões de voltar (header e cancelar) fazem a mesma coisa
   container.querySelectorAll("#btnVoltar, #btnVoltar2").forEach((btn) => {
     btn.addEventListener("click", () => {
       window.location.hash = "#dashboard";

@@ -27,7 +27,7 @@
 }
 
 .quiz-header h1 {
-  font-family: 'Sora', sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 2.25rem;
   font-weight: 700;
   color: #111827;
@@ -45,7 +45,9 @@
 .quiz-card {
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.03),
+    0 8px 10px -6px rgba(0, 0, 0, 0.03);
   border: 1px solid #e5e7eb;
   padding: 2.5rem;
 }
@@ -115,7 +117,7 @@
 }
 
 .scenario-text {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 1.1rem;
   color: #1f2937;
   line-height: 1.6;
@@ -139,7 +141,7 @@
   border: 1.5px solid #e5e7eb;
   border-radius: 10px;
   padding: 1rem 1.25rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-size: 0.975rem;
   line-height: 1.5;
   font-weight: 500;
@@ -198,7 +200,7 @@
 }
 
 .feedback-title {
-  font-family: 'Sora', sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
@@ -228,7 +230,7 @@
   border: none;
   padding: 0.85rem 1.75rem;
   border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -250,7 +252,7 @@
 }
 
 .end-card h2 {
-  font-family: 'Sora', sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 1.85rem;
   color: #111827;
   margin-bottom: 1.5rem;
@@ -288,7 +290,7 @@
 }
 
 .score-number {
-  font-family: 'Sora', sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 3rem;
   font-weight: 700;
   line-height: 1;
@@ -307,15 +309,21 @@
 }
 
 .resultado-feedback h3 {
-  font-family: 'Sora', sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
 }
 
-.status-success { color: #15803d; }
-.status-warning { color: #b45309; }
-.status-danger { color: #b91c1c; }
+.status-success {
+  color: #15803d;
+}
+.status-warning {
+  color: #b45309;
+}
+.status-danger {
+  color: #b91c1c;
+}
 
 .conselho-texto {
   font-size: 0.975rem;
@@ -329,7 +337,8 @@
   width: 100%;
 }
 
-.btn-reiniciar, .btn-voltar-painel {
+.btn-reiniciar,
+.btn-voltar-painel {
   flex: 1;
   padding: 1rem;
   border-radius: 8px;
@@ -350,36 +359,6 @@
   background-color: #d84a12;
 }
 
-.btn-voltar-painel {
-  background-color: #ffffff;
-  color: #374151;
-  border: 1.5px solid #d1d5db;
-}
-
-.btn-voltar-painel:hover {
-  background-color: #f9fafb;
-}
-
-/* Navegação Topbar */
-.btn-voltar-top {
-  background: none;
-  border: 1px solid #d1d5db;
-  color: #374151;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  outline: none;
-}
-
-.btn-voltar-top:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-/* Highlights de correção */
 .btn-quiz.correta-highlight {
   background-color: #f0faf4 !important;
   color: #15803d !important;
@@ -407,11 +386,11 @@
   .quiz-card {
     padding: 1.75rem;
   }
-  
+
   .quiz-actions {
     gap: 0.75rem;
   }
-  
+
   .end-actions {
     flex-direction: column;
     gap: 0.75rem;

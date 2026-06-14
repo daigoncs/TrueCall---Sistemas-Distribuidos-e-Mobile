@@ -4,14 +4,14 @@ export default () => {
   container.innerHTML = `
     <div class="dashboard-page">
 
-      <nav class="topbar">
-        <span class="topbar-brand">True<span>Call</span></span>
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
-          <button id="btnIrBlacklist" class="btn-logout" style="border-color: rgba(232, 87, 26, 0.4); color: #e8571a; font-weight: 600;">Blacklist de Golpes</button>
-          <button id="btnIrQuiz" class="btn-logout" style="border-color: rgba(232, 87, 26, 0.4); color: #e8571a; font-weight: 600;">Simulador de Golpes</button>
-          <button id="logout" class="btn-logout">Sair</button>
-        </div>
-      </nav>
+<nav class="topbar">
+  <span class="topbar-brand">True<span>Call</span></span>
+  <div class="topbar-menu">
+    <button id="btnIrBlacklist" class="btn-logout btn-secondary">Blacklist de Golpes</button>
+    <button id="btnIrQuiz" class="btn-logout btn-secondary">Simulador de Golpes</button>
+    <button id="logout" class="btn-logout">Sair</button>
+  </div>
+</nav>
 
       <main class="dashboard-main">
         <div class="dashboard-content">
@@ -181,7 +181,6 @@ export default () => {
     return container;
   }
 
-  // -- Navegação --
   container.querySelector("#novaDenuncia").addEventListener("click", () => {
     window.location.hash = "#denuncia";
   });
@@ -200,7 +199,6 @@ export default () => {
     window.location.hash = "#login";
   });
 
-  // -- Números confiáveis --
   let todosOsNumeros = [];
 
   function preencherFiltro(numeros) {
