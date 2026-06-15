@@ -1,3 +1,5 @@
+import { API_URL } from "../../config.js";
+
 export default () => {
   const container = document.createElement("div");
 
@@ -76,7 +78,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "https://truecall.onrender.com/api/auth/registrar",
+        `${API_URL}/api/auth/registrar`,
         {
           method: "POST",
           headers: {

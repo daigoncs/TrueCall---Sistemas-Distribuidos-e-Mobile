@@ -1,3 +1,5 @@
+import { API_URL } from "../../config.js";
+
 // ==========================================
 // FUNÇÕES AUXILIARES (Puras e Isoladas)
 // ==========================================
@@ -159,7 +161,7 @@ export default () => {
   const buscarDadosApi = async (endpoint, selectElement) => {
     try {
       const response = await fetch(
-        `https://truecall.onrender.com/api/${endpoint}`,
+        `${API_URL}/api/${endpoint}`,
       );
       const dados = await response.json();
       selectElement.innerHTML =
@@ -208,7 +210,7 @@ export default () => {
       };
 
       const response = await fetch(
-        "https://truecall.onrender.com/api/denuncias",
+        "${API_URL}/api/denuncias",
         {
           method: "POST",
           headers: {

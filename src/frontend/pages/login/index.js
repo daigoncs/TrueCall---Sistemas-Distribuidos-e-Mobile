@@ -1,3 +1,15 @@
+import { API_URL } from "../../config.js";
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export default () => {
   const containerLogin = document.createElement("div");
 
@@ -112,7 +124,7 @@ export default () => {
     }
 
     try {
-      const response = await fetch("https://truecall.onrender.com/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -273,25 +285,25 @@ export default () => {
       btnConsultar.disabled = true;
       btnConsultar.innerText = "Verificando...";
 
-      const response = await fetch(`https://truecall.onrender.com/api/denuncias/publico/verificar/${telefoneLimpo}`);
+      const response = await fetch(`${API_URL}/api/denuncias/publico/verificar/${telefoneLimpo}`);
       const data = await response.json();
 
       resultadoConsulta.style.display = "block";
       
       if (data.status === "confiavel") {
         resultadoConsulta.classList.add("confiavel");
-        resultadoConsulta.innerHTML = `<strong>Número Oficial</strong><br>${data.detalhes}`;
+        resultadoConsulta.innerHTML = `<strong>Número Oficial</strong><br>${escapeHtml(data.detalhes)}`;
       } else if (data.status === "suspeito") {
         resultadoConsulta.classList.add("suspeito");
         const dicasHtml = obterDicasDefesa(data.tipos_golpe);
         resultadoConsulta.innerHTML = `
           <strong>Aviso de Golpe</strong><br>
-          ${data.detalhes}
+          ${escapeHtml(data.detalhes)}
           ${dicasHtml}
         `;
       } else {
         resultadoConsulta.classList.add("desconhecido");
-        resultadoConsulta.innerHTML = `<strong>Não Registrado</strong><br>${data.detalhes}`;
+        resultadoConsulta.innerHTML = `<strong>Não Registrado</strong><br>${escapeHtml(data.detalhes)}`;
       }
 
     } catch (err) {

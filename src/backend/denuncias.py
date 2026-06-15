@@ -96,6 +96,11 @@ def criar_denuncia(usuario_id):
     tipo_golpe_personalizado  = dados.get("tipo_golpe_personalizado")
     estado                    = dados.get("estado")
 
+    if len(telefone) > 30:
+        return jsonify({"erro": "O telefone deve ter no máximo 30 caracteres"}), 400
+    if len(descricao) > 500:
+        return jsonify({"erro": "A descrição deve ter no máximo 500 caracteres"}), 400
+
     if instituicao_personalizada:
         instituicao_personalizada = instituicao_personalizada.strip()
     if tipo_golpe_personalizado:
@@ -443,8 +448,9 @@ def verificar_telefone_publico(telefone):
 
     db = get_db()
 
-    # Verifica números confiáveis (carrega apenas os necessários pelo número)
-    oficiais = db.execute("SELECT instituicao, numero FROM numero_confiavel").fetchall()
+    oficiais = db.execute(
+        "SELECT DISTINCT instituicao, numero FROM numero_confiavel"
+    ).fetchall()
     for o in oficiais:
         num_oficial_limpo = "".join([c for c in o["numero"] if c.isdigit()])
         coincide = False
