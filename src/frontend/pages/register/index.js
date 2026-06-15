@@ -75,7 +75,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/auth/registrar",
+        "https://truecall.onrender.com/api/auth/registrar",
         {
           method: "POST",
           headers: {

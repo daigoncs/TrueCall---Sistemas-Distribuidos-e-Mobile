@@ -57,7 +57,7 @@ export default () => {
 
       // Requisição para a sua API do Backend
       const response = await fetch(
-        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/auth/forgot-password",
+        "https://truecall.onrender.com/api/auth/forgot-password",
         {
           method: "POST",
           headers: {

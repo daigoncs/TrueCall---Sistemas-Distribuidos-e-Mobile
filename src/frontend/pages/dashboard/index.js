@@ -266,7 +266,7 @@ export default () => {
 
         try {
           const deleteResponse = await fetch(
-            `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes/confiaveis/${id}`,
+            `https://truecall.onrender.com/api/instituicoes/confiaveis/${id}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${token}` },
@@ -293,7 +293,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes/confiaveis",
+        "https://truecall.onrender.com/api/instituicoes/confiaveis",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -411,7 +411,7 @@ export default () => {
 
       try {
         const response = await fetch(
-          "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes/confiaveis",
+          "https://truecall.onrender.com/api/instituicoes/confiaveis",
           {
             method: "POST",
             headers: {
@@ -465,7 +465,7 @@ export default () => {
     if (!instituicoesCarregadas) {
       try {
         const response = await fetch(
-          "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/instituicoes",
+          "https://truecall.onrender.com/api/instituicoes",
         );
         const dados = await response.json();
         editInst.innerHTML =
@@ -482,7 +482,7 @@ export default () => {
     if (!tiposCarregados) {
       try {
         const response = await fetch(
-          "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/tipos-golpe",
+          "https://truecall.onrender.com/api/tipos-golpe",
         );
         const dados = await response.json();
         editTipo.innerHTML =
@@ -589,7 +589,7 @@ export default () => {
 
       try {
         const response = await fetch(
-          `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${denunciaSendoEditadaId}`,
+          `https://truecall.onrender.com/api/denuncias/${denunciaSendoEditadaId}`,
           {
             method: "PUT",
             headers: {
@@ -822,7 +822,7 @@ export default () => {
     try {
       // por_pagina=100 garante dados completos para o gráfico
       const response = await fetch(
-        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias?por_pagina=100",
+        "https://truecall.onrender.com/api/denuncias?por_pagina=100",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -934,7 +934,7 @@ export default () => {
         btn.addEventListener("click", async () => {
           if (!confirm("Excluir denúncia?")) return;
           await fetch(
-            `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${btn.dataset.id}`,
+            `https://truecall.onrender.com/api/denuncias/${btn.dataset.id}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${token}` },

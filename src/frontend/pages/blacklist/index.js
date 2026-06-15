@@ -40,15 +40,13 @@ export default () => {
     window.location.hash = "#quiz";
   });
 
-
-
   async function carregarListaNegra() {
     const feed = container.querySelector("#feedBlacklist");
     if (!feed) return;
 
     try {
       const response = await fetch(
-        "https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/publico/recentes",
+        "https://truecall.onrender.com/api/denuncias/publico/recentes",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
