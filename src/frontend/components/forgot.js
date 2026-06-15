@@ -1,3 +1,5 @@
+import { fetchApi } from "../utils/api.js";
+
 export default () => {
   const containerForgot = document.createElement("div");
 
@@ -56,16 +58,13 @@ export default () => {
       btnEnviar.innerText = "Enviando...";
 
       // Requisição para a sua API do Backend
-      const response = await fetch(
-        "https://truecall.onrender.com/api/auth/forgot-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
+      const response = await fetchApi("auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ email }),
+      });
 
       const data = await response.json();
 

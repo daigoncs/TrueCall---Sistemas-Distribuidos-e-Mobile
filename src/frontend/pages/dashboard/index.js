@@ -1,3 +1,10 @@
+import { fetchAuthApi } from "../../utils/api.js";
+import { requireAuth, logout } from "../../utils/auth.js";
+import { aplicarMascaraTelefone } from "../../utils/masks.js";
+import { gerarOptionsEstados } from "../../utils/estados.js";
+import { resolverNomeOutro, popularSelect, monitorarSelecaoOutro } from "../../utils/dom.js";
+import { desenharDonut } from "../../utils/charts.js";
+
 export default () => {
   const container = document.createElement("div");
 
@@ -144,34 +151,7 @@ export default () => {
           <label for="editEstado" style="margin-top: 15px; display: block;">Estado (UF)</label>
           <div class="select-wrapper">
             <select id="editEstado" class="input" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; box-sizing: border-box;">
-              <option value="">Selecionar estado...</option>
-              <option value="AC">Acre</option>
-              <option value="AL">Alagoas</option>
-              <option value="AP">Amapá</option>
-              <option value="AM">Amazonas</option>
-              <option value="BA">Bahia</option>
-              <option value="CE">Ceará</option>
-              <option value="DF">Distrito Federal</option>
-              <option value="ES">Espírito Santo</option>
-              <option value="GO">Goiás</option>
-              <option value="MA">Maranhão</option>
-              <option value="MT">Mato Grosso</option>
-              <option value="MS">Mato Grosso do Sul</option>
-              <option value="MG">Minas Gerais</option>
-              <option value="PA">Pará</option>
-              <option value="PB">Paraíba</option>
-              <option value="PR">Paraná</option>
-              <option value="PE">Pernambuco</option>
-              <option value="PI">Piauí</option>
-              <option value="RJ">Rio de Janeiro</option>
-              <option value="RN">Rio Grande do Norte</option>
-              <option value="RS">Rio Grande do Sul</option>
-              <option value="RO">Rondônia</option>
-              <option value="RR">Roraima</option>
-              <option value="SC">Santa Catarina</option>
-              <option value="SP">São Paulo</option>
-              <option value="SE">Sergipe</option>
-              <option value="TO">Tocantins</option>
+              ${gerarOptionsEstados()}
             </select>
           </div>
 
@@ -189,11 +169,8 @@ export default () => {
     </div>
   `;
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.hash = "#login";
-    return container;
-  }
+  const token = requireAuth();
+  if (!token) return container;
 
   const btnNovaDenuncia = container.querySelector("#novaDenuncia");
   const btnIrBlacklist = container.querySelector("#btnIrBlacklist");
@@ -232,11 +209,7 @@ export default () => {
   }
 
   if (btnLogout) {
-    btnLogout.addEventListener("click", () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
-      window.location.hash = "#login";
-    });
+    btnLogout.addEventListener("click", () => logout());
   }
 
   if (btnHamburguer && menuItens) {
@@ -262,30 +235,10 @@ export default () => {
 
   if (logoutMobile) {
     logoutMobile.addEventListener("click", () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
-      window.location.hash = "#login";
+      logout();
       fecharMenu();
     });
   }
-
-  container.querySelector("#novaDenuncia").addEventListener("click", () => {
-    window.location.hash = "#denuncia";
-  });
-
-  container.querySelector("#btnIrBlacklist").addEventListener("click", () => {
-    window.location.hash = "#blacklist";
-  });
-
-  container.querySelector("#btnIrQuiz").addEventListener("click", () => {
-    window.location.hash = "#quiz";
-  });
-
-  container.querySelector("#logout").addEventListener("click", () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    window.location.hash = "#login";
-  });
 
   let todosOsNumeros = [];
 
@@ -339,12 +292,9 @@ export default () => {
         if (!confirm(`Remover ${instituicao}?`)) return;
 
         try {
-          const deleteResponse = await fetch(
-            `https://truecall.onrender.com/api/instituicoes/confiaveis/${id}`,
-            {
-              method: "DELETE",
-              headers: { Authorization: `Bearer ${token}` },
-            },
+          const deleteResponse = await fetchAuthApi(
+            `instituicoes/confiaveis/${id}`,
+            { method: "DELETE" },
           );
 
           if (deleteResponse.ok) {
@@ -366,12 +316,7 @@ export default () => {
     tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Carregando...</td></tr>`;
 
     try {
-      const response = await fetch(
-        "https://truecall.onrender.com/api/instituicoes/confiaveis",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const response = await fetchAuthApi("instituicoes/confiaveis");
 
       todosOsNumeros = await response.json();
 
@@ -398,40 +343,8 @@ export default () => {
   const inputNum = container.querySelector("#inputNumero");
   const modalMsg = container.querySelector("#modalMsg");
 
-  // Máscara flexível para número oficial (0800, 4004 ou celular/fixo local)
   inputNum.addEventListener("input", (e) => {
-    let valor = e.target.value.replace(/\D/g, "");
-
-    if (valor.startsWith("0800")) {
-      if (valor.length > 11) valor = valor.slice(0, 11);
-      if (valor.length <= 4) {
-        e.target.value = valor;
-      } else if (valor.length <= 7) {
-        e.target.value = `${valor.slice(0, 4)} ${valor.slice(4)}`;
-      } else {
-        e.target.value = `${valor.slice(0, 4)} ${valor.slice(4, 7)} ${valor.slice(7)}`;
-      }
-    } else if (valor.startsWith("4004") || valor.startsWith("3003")) {
-      if (valor.length > 8) valor = valor.slice(0, 8);
-      if (valor.length <= 4) {
-        e.target.value = valor;
-      } else {
-        e.target.value = `${valor.slice(0, 4)}-${valor.slice(4)}`;
-      }
-    } else {
-      if (valor.length > 11) valor = valor.slice(0, 11);
-      if (valor.length === 0) {
-        e.target.value = "";
-      } else if (valor.length <= 2) {
-        e.target.value = `(${valor}`;
-      } else if (valor.length <= 6) {
-        e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
-      } else if (valor.length <= 10) {
-        e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
-      } else {
-        e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
-      }
-    }
+    e.target.value = aplicarMascaraTelefone(e.target.value);
   });
 
   container
@@ -484,17 +397,11 @@ export default () => {
       }
 
       try {
-        const response = await fetch(
-          "https://truecall.onrender.com/api/instituicoes/confiaveis",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ instituicao, numero }),
-          },
-        );
+        const response = await fetchAuthApi("instituicoes/confiaveis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ instituicao, numero }),
+        });
 
         if (response.ok) {
           carregarNumerosConfiaveis();
@@ -531,61 +438,22 @@ export default () => {
     editCharCount.textContent = `${e.target.value.length}/300`;
   });
 
-  // Carregar opções dos selects para edição
   let instituicoesCarregadas = false;
   let tiposCarregados = false;
 
   async function prepararSelectsEdicao() {
     if (!instituicoesCarregadas) {
-      try {
-        const response = await fetch(
-          "https://truecall.onrender.com/api/instituicoes",
-        );
-        const dados = await response.json();
-        editInst.innerHTML =
-          `<option value="">Selecionar...</option>` +
-          dados
-            .map((i) => `<option value="${i.id}">${i.nome}</option>`)
-            .join("");
-        instituicoesCarregadas = true;
-      } catch (e) {
-        console.error("Erro ao carregar instituições no modal de edição", e);
-      }
+      await popularSelect("instituicoes", editInst);
+      instituicoesCarregadas = true;
     }
-
     if (!tiposCarregados) {
-      try {
-        const response = await fetch(
-          "https://truecall.onrender.com/api/tipos-golpe",
-        );
-        const dados = await response.json();
-        editTipo.innerHTML =
-          `<option value="">Selecionar...</option>` +
-          dados
-            .map((t) => `<option value="${t.id}">${t.nome}</option>`)
-            .join("");
-        tiposCarregados = true;
-      } catch (e) {
-        console.error("Erro ao carregar tipos de golpe no modal de edição", e);
-      }
+      await popularSelect("tipos-golpe", editTipo);
+      tiposCarregados = true;
     }
   }
 
-  // Listeners de mudança nos selects do modal de edição
-  editInst.addEventListener("change", () => {
-    const isOutro =
-      editInst.options[editInst.selectedIndex]?.text.toLowerCase() === "outro";
-    container.querySelector(
-      "#wrapperEditInstituicaoPersonalizada",
-    ).style.display = isOutro ? "block" : "none";
-  });
-
-  editTipo.addEventListener("change", () => {
-    const isOutro =
-      editTipo.options[editTipo.selectedIndex]?.text.toLowerCase() === "outro";
-    container.querySelector("#wrapperEditTipoPersonalizado").style.display =
-      isOutro ? "block" : "none";
-  });
+  monitorarSelecaoOutro(container, editInst, "#wrapperEditInstituicaoPersonalizada");
+  monitorarSelecaoOutro(container, editTipo, "#wrapperEditTipoPersonalizado");
 
   async function abrirModalEditar(id) {
     denunciaSendoEditadaId = id;
@@ -662,14 +530,11 @@ export default () => {
       }
 
       try {
-        const response = await fetch(
-          `https://truecall.onrender.com/api/denuncias/${denunciaSendoEditadaId}`,
+        const response = await fetchAuthApi(
+          `denuncias/${denunciaSendoEditadaId}`,
           {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               descricao,
               instituicao_id,
@@ -703,16 +568,8 @@ export default () => {
 
   // ── Gráfico de pizza (Canvas API nativa) ──────────────────────────────
   const CORES_PIZZA = [
-    "#e8571a",
-    "#f5a623",
-    "#4a90d9",
-    "#7b68ee",
-    "#2ecc71",
-    "#e74c3c",
-    "#1abc9c",
-    "#9b59b6",
-    "#34495e",
-    "#f39c12",
+    "#e8571a", "#f5a623", "#4a90d9", "#7b68ee", "#2ecc71",
+    "#e74c3c", "#1abc9c", "#9b59b6", "#34495e", "#f39c12",
   ];
 
   function desenharGraficoPizza(contagem) {
@@ -720,76 +577,15 @@ export default () => {
     const canvas = container.querySelector("#pizzaCanvas");
     const legenda = container.querySelector("#graficoLegenda");
     const banner = container.querySelector("#graficoBanner");
-    const ctx = canvas.getContext("2d");
 
     const entradas = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+    const coresMap = (_label, i) => CORES_PIZZA[i % CORES_PIZZA.length];
+    const drawn = desenharDonut(canvas, legenda, entradas, coresMap);
+
+    card.style.display = drawn ? "block" : "none";
+    if (!drawn) return;
+
     const total = entradas.reduce((s, [, v]) => s + v, 0);
-
-    if (total === 0) {
-      card.style.display = "none";
-      return;
-    }
-    card.style.display = "block";
-
-    // ── Desenho do gráfico ────────────────────────────────────────────
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const r = Math.min(cx, cy) - 10;
-    const rInterno = r * 0.42; // furo central (rosquinha)
-
-    let angulo = -Math.PI / 2; // começa no topo
-
-    entradas.forEach(([, qtd], i) => {
-      const fatia = (qtd / total) * 2 * Math.PI;
-      const cor = CORES_PIZZA[i % CORES_PIZZA.length];
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, angulo, angulo + fatia);
-      ctx.closePath();
-      ctx.fillStyle = cor;
-      ctx.fill();
-
-      // Borda fina entre fatias
-      ctx.strokeStyle = "#f7f7f8";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      angulo += fatia;
-    });
-
-    // Furo central — efeito rosquinha (donut chart)
-    ctx.beginPath();
-    ctx.arc(cx, cy, rInterno, 0, 2 * Math.PI);
-    ctx.fillStyle = "#f7f7f8";
-    ctx.fill();
-
-    // Texto central: total de denúncias
-    ctx.fillStyle = "#111111";
-    ctx.font = `bold ${Math.round(r * 0.28)}px Sora, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(total, cx, cy - 6);
-    ctx.font = `${Math.round(r * 0.14)}px DM Sans, sans-serif`;
-    ctx.fillStyle = "#888";
-    ctx.fillText("denúncias", cx, cy + 13);
-
-    // ── Legenda ───────────────────────────────────────────────────────
-    legenda.innerHTML = "";
-    entradas.forEach(([golpe, qtd], i) => {
-      const pct = ((qtd / total) * 100).toFixed(0);
-      const li = document.createElement("li");
-      li.className = "legenda-item";
-      li.innerHTML = `
-        <span class="legenda-cor" style="background:${CORES_PIZZA[i % CORES_PIZZA.length]}"></span>
-        <span class="legenda-nome">${golpe}</span>
-        <span class="legenda-pct">${pct}%</span>
-      `;
-      legenda.appendChild(li);
-    });
-
-    // ── Banner de alerta contextual ───────────────────────────────────
     const [golpeTopo, qtdTopo] = entradas[0];
     const pctTopo = ((qtdTopo / total) * 100).toFixed(0);
     banner.className = "grafico-banner";
@@ -801,84 +597,22 @@ export default () => {
 
   // ── Gráfico de pizza por Regiões do Brasil ────────────────────────
   const CORES_REGIOES = {
-    Sudeste: "#e8571a", // Laranja corporativo
-    Sul: "#3b82f6", // Azul
-    Nordeste: "#10b981", // Verde
-    "Centro-Oeste": "#f5a623", // Amarelo/Laranja claro
-    Norte: "#8b5cf6", // Roxo
+    Sudeste: "#e8571a",
+    Sul: "#3b82f6",
+    Nordeste: "#10b981",
+    "Centro-Oeste": "#f5a623",
+    Norte: "#8b5cf6",
   };
 
   function desenharGraficoRegioesPizza(contagem) {
     const card = container.querySelector("#regioesCard");
     const canvas = container.querySelector("#regioesCanvas");
     const legenda = container.querySelector("#legendaRegioes");
-    const ctx = canvas.getContext("2d");
 
     const entradas = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
-    const total = entradas.reduce((s, [, v]) => s + v, 0);
+    const drawn = desenharDonut(canvas, legenda, entradas, CORES_REGIOES, { showCount: true });
 
-    if (total === 0) {
-      card.style.display = "none";
-      return;
-    }
-    card.style.display = "block";
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const r = Math.min(cx, cy) - 10;
-    const rInterno = r * 0.42;
-
-    let angulo = -Math.PI / 2;
-
-    entradas.forEach(([regiao, qtd]) => {
-      const fatia = (qtd / total) * 2 * Math.PI;
-      const cor = CORES_REGIOES[regiao] || "#9ca3af";
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, angulo, angulo + fatia);
-      ctx.closePath();
-      ctx.fillStyle = cor;
-      ctx.fill();
-
-      // Borda fina
-      ctx.strokeStyle = "#f7f7f8";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      angulo += fatia;
-    });
-
-    // Furo central
-    ctx.beginPath();
-    ctx.arc(cx, cy, rInterno, 0, 2 * Math.PI);
-    ctx.fillStyle = "#f7f7f8";
-    ctx.fill();
-
-    // Texto central
-    ctx.fillStyle = "#111111";
-    ctx.font = `bold ${Math.round(r * 0.28)}px Sora, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(total, cx, cy - 6);
-    ctx.font = `${Math.round(r * 0.14)}px DM Sans, sans-serif`;
-    ctx.fillStyle = "#888";
-    ctx.fillText("denúncias", cx, cy + 13);
-
-    // Legenda
-    legenda.innerHTML = "";
-    entradas.forEach(([regiao, qtd]) => {
-      const pct = ((qtd / total) * 100).toFixed(0);
-      const li = document.createElement("li");
-      li.className = "legenda-item";
-      li.innerHTML = `
-        <span class="legenda-cor" style="background:${CORES_REGIOES[regiao] || "#9ca3af"}"></span>
-        <span class="legenda-nome">${regiao}</span>
-        <span class="legenda-pct">${pct}% (${qtd})</span>
-      `;
-      legenda.appendChild(li);
-    });
+    card.style.display = drawn ? "block" : "none";
   }
 
   // ── Denúncias ─────────────────────────────────────────────────────────
@@ -895,12 +629,7 @@ export default () => {
 
     try {
       // por_pagina=100 garante dados completos para o gráfico
-      const response = await fetch(
-        "https://truecall.onrender.com/api/denuncias?por_pagina=100",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const response = await fetchAuthApi("denuncias?por_pagina=100");
 
       const json = await response.json();
       // Compatível tanto com a resposta paginada {dados:[]} quanto array direto
@@ -968,15 +697,8 @@ export default () => {
       }
 
       denuncias.forEach((d) => {
-        const nomeInstituicao =
-          d.instituicao === "Outro" && d.instituicao_personalizada
-            ? d.instituicao_personalizada
-            : d.instituicao;
-
-        const nomeTipoGolpe =
-          d.tipo_golpe === "Outro" && d.tipo_golpe_personalizado
-            ? d.tipo_golpe_personalizado
-            : d.tipo_golpe;
+        const nomeInstituicao = resolverNomeOutro(d.instituicao, d.instituicao_personalizada);
+        const nomeTipoGolpe = resolverNomeOutro(d.tipo_golpe, d.tipo_golpe_personalizado);
 
         lista.innerHTML += `
           <div class="cardDenuncia">
@@ -1007,13 +729,9 @@ export default () => {
       lista.querySelectorAll(".btnExcluir").forEach((btn) => {
         btn.addEventListener("click", async () => {
           if (!confirm("Excluir denúncia?")) return;
-          await fetch(
-            `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${btn.dataset.id}`,
-            {
-              method: "DELETE",
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          );
+          await fetchAuthApi(`denuncias/${btn.dataset.id}`, {
+            method: "DELETE",
+          });
           carregarDenuncias();
         });
       });
@@ -1038,10 +756,7 @@ export default () => {
     csvContent += "Telefone,Tipo de Golpe,Instituição,Descrição,Estado,Data\n";
 
     todasAsDenuncias.forEach((d) => {
-      const instituicao =
-        d.instituicao === "Outro" && d.instituicao_personalizada
-          ? d.instituicao_personalizada
-          : d.instituicao;
+      const instituicao = resolverNomeOutro(d.instituicao, d.instituicao_personalizada);
 
       const tel = d.telefone.replace(/"/g, '""');
       const tipo = d.tipo_golpe.replace(/"/g, '""');

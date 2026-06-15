@@ -8,6 +8,7 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from src.backend.db import get_db
+from src.backend.utils import validar_campos_obrigatorios
 
 logger = logging.getLogger(__name__)
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
@@ -49,10 +50,9 @@ def token_obrigatorio(f):
 def registrar():
     dados = request.get_json()
 
-    campos = ["nome", "email", "senha"]
-    for campo in campos:
-        if not dados or not dados.get(campo):
-            return jsonify({"erro": f"Campo '{campo}' é obrigatório"}), 400
+    erro = validar_campos_obrigatorios(dados, ["nome", "email", "senha"])
+    if erro:
+        return erro
 
     nome  = dados["nome"].strip()
     email = dados["email"].strip().lower()
@@ -103,8 +103,9 @@ def login():
     """
     dados = request.get_json()
 
-    if not dados or not dados.get("email") or not dados.get("senha"):
-        return jsonify({"erro": "Email e senha são obrigatórios"}), 400
+    erro = validar_campos_obrigatorios(dados, ["email", "senha"])
+    if erro:
+        return erro
 
     email = dados["email"].strip().lower()
     senha = dados["senha"]

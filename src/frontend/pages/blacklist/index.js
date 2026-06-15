@@ -1,3 +1,6 @@
+import { fetchAuthApi } from "../../utils/api.js";
+import { requireAuth } from "../../utils/auth.js";
+
 export default () => {
   const container = document.createElement("div");
 
@@ -31,23 +34,15 @@ export default () => {
     </div>
   `;
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.hash = "#login";
-    return container;
-  }
+  const token = requireAuth();
+  if (!token) return container;
 
   async function carregarListaNegra() {
     const feed = container.querySelector("#feedBlacklist");
     if (!feed) return;
 
     try {
-      const response = await fetch(
-        "https://truecall.onrender.com/api/denuncias/publico/recentes",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const response = await fetchAuthApi("denuncias/publico/recentes");
       const dados = await response.json();
 
       if (dados.length === 0) {

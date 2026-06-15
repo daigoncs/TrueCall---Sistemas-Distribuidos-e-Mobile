@@ -3,6 +3,12 @@ from flask import Blueprint, request, jsonify
 
 from src.backend.db import get_db
 from src.backend.auth import token_obrigatorio
+from src.backend.utils import (
+    validar_campos_obrigatorios,
+    resolver_nome_outro,
+    DENUNCIA_SELECT_COLUMNS,
+    DENUNCIA_BASE_JOINS,
+)
 
 logger = logging.getLogger(__name__)
 denuncias_bp = Blueprint("denuncias", __name__, url_prefix="/api/denuncias")
@@ -33,27 +39,9 @@ def listar_denuncias(usuario_id):
     ).fetchone()[0]
 
     denuncias = db.execute(
-        """
-        SELECT
-            d.id,
-            d.telefone,
-            d.descricao,
-            d.data_denuncia,
-            d.instituicao_personalizada,
-            d.tipo_golpe_personalizado,
-            d.instituicao_id,
-            d.tipo_golpe_id,
-            d.estado,
-            i.nome AS instituicao,
-            t.nome AS tipo_golpe,
-            (SELECT COUNT(*) FROM voto_denuncia v WHERE v.denuncia_id = d.id) AS votos,
-            EXISTS(
-                SELECT 1 FROM voto_denuncia v
-                WHERE v.denuncia_id = d.id AND v.usuario_id = ?
-            ) AS votou
-        FROM denuncia d
-        JOIN instituicao i ON d.instituicao_id = i.id
-        JOIN tipo_golpe t  ON d.tipo_golpe_id  = t.id
+        f"""
+        SELECT {DENUNCIA_SELECT_COLUMNS}
+        {DENUNCIA_BASE_JOINS}
         WHERE d.usuario_id = ?
         ORDER BY d.data_denuncia DESC
         LIMIT ? OFFSET ?
@@ -83,10 +71,9 @@ def listar_denuncias(usuario_id):
 def criar_denuncia(usuario_id):
     dados = request.get_json()
 
-    campos = ["telefone", "descricao", "instituicao_id", "tipo_golpe_id"]
-    for campo in campos:
-        if not dados or not dados.get(campo):
-            return jsonify({"erro": f"Campo '{campo}' é obrigatório"}), 400
+    erro = validar_campos_obrigatorios(dados, ["telefone", "descricao", "instituicao_id", "tipo_golpe_id"])
+    if erro:
+        return erro
 
     telefone              = dados["telefone"].strip()
     descricao             = dados["descricao"].strip()
@@ -481,11 +468,7 @@ def verificar_telefone_publico(telefone):
     ).fetchone()
 
     if resultado and resultado["total"] > 0:
-        inst = (
-            resultado["instituicao_personalizada"]
-            if resultado["instituicao"] == "Outro" and resultado["instituicao_personalizada"]
-            else resultado["instituicao"]
-        )
+        inst = resolver_nome_outro(resultado["instituicao"], resultado["instituicao_personalizada"])
         inst_texto = f" se passando por {inst}" if inst and inst != "Outro" else ""
         confirmacoes = resultado["confirmacoes"] or 0
 
@@ -547,16 +530,13 @@ def listar_denuncias_recentes_publico():
 
     resposta = []
     for r in recentes:
-        inst = r["instituicao_personalizada"] if r["instituicao"] == "Outro" and r["instituicao_personalizada"] else r["instituicao"]
-        tipo = r["tipo_golpe_personalizado"] if r["tipo_golpe"] == "Outro" and r["tipo_golpe_personalizado"] else r["tipo_golpe"]
-
         resposta.append({
             "telefone": r["telefone"],
             "descricao": r["descricao"],
             "data_denuncia": r["data_denuncia"],
             "estado": r["estado"],
-            "instituicao": inst,
-            "tipo_golpe": tipo
+            "instituicao": resolver_nome_outro(r["instituicao"], r["instituicao_personalizada"]),
+            "tipo_golpe": resolver_nome_outro(r["tipo_golpe"], r["tipo_golpe_personalizado"])
         })
 
     return jsonify(resposta), 200
@@ -568,24 +548,9 @@ def listar_denuncias_recentes_publico():
 
 def _buscar_denuncia_do_usuario(db, denuncia_id, usuario_id):
     return db.execute(
-        """
-        SELECT
-            d.id, d.telefone, d.descricao, d.data_denuncia,
-            d.instituicao_personalizada,
-            d.tipo_golpe_personalizado,
-            d.instituicao_id,
-            d.tipo_golpe_id,
-            d.estado,
-            i.nome AS instituicao,
-            t.nome AS tipo_golpe,
-            (SELECT COUNT(*) FROM voto_denuncia v WHERE v.denuncia_id = d.id) AS votos,
-            EXISTS(
-                SELECT 1 FROM voto_denuncia v
-                WHERE v.denuncia_id = d.id AND v.usuario_id = ?
-            ) AS votou
-        FROM denuncia d
-        JOIN instituicao i ON d.instituicao_id = i.id
-        JOIN tipo_golpe t  ON d.tipo_golpe_id  = t.id
+        f"""
+        SELECT {DENUNCIA_SELECT_COLUMNS}
+        {DENUNCIA_BASE_JOINS}
         WHERE d.id = ? AND d.usuario_id = ?
         """,
         (usuario_id, denuncia_id, usuario_id)
