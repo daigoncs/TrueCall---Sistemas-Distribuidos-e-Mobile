@@ -48,6 +48,10 @@ export default () => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+      if (!response.ok) {
+        throw new Error(`Servidor retornou ${response.status}`);
+      }
+
       const dados = await response.json();
 
       if (dados.length === 0) {

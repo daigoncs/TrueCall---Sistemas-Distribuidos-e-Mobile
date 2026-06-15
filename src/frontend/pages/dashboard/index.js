@@ -373,6 +373,10 @@ export default () => {
         },
       );
 
+      if (!response.ok) {
+        throw new Error(`Servidor retornou ${response.status}`);
+      }
+
       todosOsNumeros = await response.json();
 
       const filtro = container.querySelector("#filtroInstituicao");
@@ -541,6 +545,7 @@ export default () => {
         const response = await fetch(
           "https://truecall.onrender.com/api/instituicoes",
         );
+        if (!response.ok) throw new Error(`Servidor retornou ${response.status}`);
         const dados = await response.json();
         editInst.innerHTML =
           `<option value="">Selecionar...</option>` +
@@ -558,6 +563,7 @@ export default () => {
         const response = await fetch(
           "https://truecall.onrender.com/api/tipos-golpe",
         );
+        if (!response.ok) throw new Error(`Servidor retornou ${response.status}`);
         const dados = await response.json();
         editTipo.innerHTML =
           `<option value="">Selecionar...</option>` +
@@ -902,6 +908,10 @@ export default () => {
         },
       );
 
+      if (!response.ok) {
+        throw new Error(`Servidor retornou ${response.status}`);
+      }
+
       const json = await response.json();
       // Compatível tanto com a resposta paginada {dados:[]} quanto array direto
       const denuncias = Array.isArray(json) ? json : (json.dados ?? []);
@@ -1007,14 +1017,24 @@ export default () => {
       lista.querySelectorAll(".btnExcluir").forEach((btn) => {
         btn.addEventListener("click", async () => {
           if (!confirm("Excluir denúncia?")) return;
-          await fetch(
-            `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${btn.dataset.id}`,
-            {
-              method: "DELETE",
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          );
-          carregarDenuncias();
+          try {
+            const delResponse = await fetch(
+              `https://truecall.onrender.com/api/denuncias/${btn.dataset.id}`,
+              {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
+            if (!delResponse.ok) {
+              const errData = await delResponse.json();
+              alert(errData.erro || "Erro ao excluir denúncia.");
+              return;
+            }
+            carregarDenuncias();
+          } catch (e) {
+            console.error("Erro ao excluir denúncia:", e);
+            alert("Erro de conexão ao excluir denúncia.");
+          }
         });
       });
     } catch (error) {

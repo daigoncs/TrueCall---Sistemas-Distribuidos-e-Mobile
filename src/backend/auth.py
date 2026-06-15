@@ -93,6 +93,10 @@ def registrar():
     except db.IntegrityError:
         return jsonify({"erro": "Este email já está cadastrado"}), 409
 
+    except Exception as e:
+        logger.exception("Erro inesperado ao registrar usuário: %s", e)
+        return jsonify({"erro": "Erro interno ao registrar usuário"}), 500
+
 
 @auth_bp.route("/login", methods=["POST"])
 def login():

@@ -145,6 +145,10 @@ def criar_denuncia(usuario_id):
             "erro": "Você já registrou uma denúncia para este número de telefone"
         }), 409
 
+    except Exception as e:
+        logger.exception("Erro inesperado ao criar denúncia: %s", e)
+        return jsonify({"erro": "Erro interno ao registrar denúncia"}), 500
+
 
 # ---------------------------------------------------------------------------
 # Detalhe de denúncia
@@ -246,11 +250,16 @@ def editar_denuncia(denuncia_id, usuario_id):
 
     valores.extend([denuncia_id, usuario_id])
 
-    db.execute(
-        f"UPDATE denuncia SET {', '.join(campos_update)} WHERE id = ? AND usuario_id = ?",
-        valores
-    )
-    db.commit()
+    try:
+        db.execute(
+            f"UPDATE denuncia SET {', '.join(campos_update)} WHERE id = ? AND usuario_id = ?",
+            valores
+        )
+        db.commit()
+    except Exception as e:
+        logger.exception("Erro ao editar denúncia id=%s: %s", denuncia_id, e)
+        return jsonify({"erro": "Erro interno ao atualizar denúncia"}), 500
+
     logger.info("Denúncia editada: id=%s usuario=%s", denuncia_id, usuario_id)
 
     return jsonify({"mensagem": "Denúncia atualizada com sucesso"}), 200
@@ -265,11 +274,15 @@ def editar_denuncia(denuncia_id, usuario_id):
 def deletar_denuncia(denuncia_id, usuario_id):
     db = get_db()
 
-    resultado = db.execute(
-        "DELETE FROM denuncia WHERE id = ? AND usuario_id = ?",
-        (denuncia_id, usuario_id)
-    )
-    db.commit()
+    try:
+        resultado = db.execute(
+            "DELETE FROM denuncia WHERE id = ? AND usuario_id = ?",
+            (denuncia_id, usuario_id)
+        )
+        db.commit()
+    except Exception as e:
+        logger.exception("Erro ao deletar denúncia id=%s: %s", denuncia_id, e)
+        return jsonify({"erro": "Erro interno ao remover denúncia"}), 500
 
     if resultado.rowcount == 0:
         return jsonify({"erro": "Denúncia não encontrada"}), 404
@@ -396,6 +409,9 @@ def votar_denuncia(denuncia_id, usuario_id):
         db.commit()
     except db.IntegrityError:
         return jsonify({"erro": "Você já votou nesta denúncia"}), 409
+    except Exception as e:
+        logger.exception("Erro ao registrar voto na denúncia id=%s: %s", denuncia_id, e)
+        return jsonify({"erro": "Erro interno ao registrar voto"}), 500
 
     votos = db.execute(
         "SELECT COUNT(*) FROM voto_denuncia WHERE denuncia_id = ?", (denuncia_id,)
@@ -413,11 +429,15 @@ def remover_voto(denuncia_id, usuario_id):
     """
     db = get_db()
 
-    resultado = db.execute(
-        "DELETE FROM voto_denuncia WHERE denuncia_id = ? AND usuario_id = ?",
-        (denuncia_id, usuario_id)
-    )
-    db.commit()
+    try:
+        resultado = db.execute(
+            "DELETE FROM voto_denuncia WHERE denuncia_id = ? AND usuario_id = ?",
+            (denuncia_id, usuario_id)
+        )
+        db.commit()
+    except Exception as e:
+        logger.exception("Erro ao remover voto da denúncia id=%s: %s", denuncia_id, e)
+        return jsonify({"erro": "Erro interno ao remover voto"}), 500
 
     if resultado.rowcount == 0:
         return jsonify({"erro": "Voto não encontrado"}), 404

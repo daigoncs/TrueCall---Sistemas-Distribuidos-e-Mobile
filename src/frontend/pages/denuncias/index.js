@@ -161,6 +161,9 @@ export default () => {
       const response = await fetch(
         `https://truecall.onrender.com/api/${endpoint}`,
       );
+      if (!response.ok) {
+        throw new Error(`Servidor retornou ${response.status}`);
+      }
       const dados = await response.json();
       selectElement.innerHTML =
         `<option value="">Selecionar...</option>` +
@@ -169,6 +172,7 @@ export default () => {
           .join("");
     } catch (err) {
       console.error(`Erro ao carregar ${endpoint}:`, err);
+      selectElement.innerHTML = `<option value="">Erro ao carregar</option>`;
     }
   };
 

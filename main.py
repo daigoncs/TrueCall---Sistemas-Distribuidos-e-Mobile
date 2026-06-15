@@ -51,6 +51,23 @@ def create_app(test_config=None):
 
     limiter.init_app(app)
 
+    @app.errorhandler(500)
+    def erro_interno(e):
+        logger.exception("Erro interno não tratado: %s", e)
+        return {"erro": "Erro interno do servidor"}, 500
+
+    @app.errorhandler(404)
+    def rota_nao_encontrada(e):
+        return {"erro": "Recurso não encontrado"}, 404
+
+    @app.errorhandler(405)
+    def metodo_nao_permitido(e):
+        return {"erro": "Método não permitido"}, 405
+
+    @app.errorhandler(429)
+    def limite_excedido(e):
+        return {"erro": "Limite de requisições excedido. Tente novamente mais tarde."}, 429
+
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(denuncias_bp, url_prefix="/api/denuncias")
     app.register_blueprint(instituicoes_bp, url_prefix="/api/instituicoes")
