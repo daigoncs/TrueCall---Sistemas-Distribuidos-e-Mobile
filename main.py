@@ -7,11 +7,11 @@ from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-from .db import close_db, init_db
-from .auth import auth_bp
-from .denuncias import denuncias_bp
-from .instituicoes import instituicoes_bp
-from .tipos_golpe import tipos_golpe_bp
+from src.backend.db import close_db, init_db
+from src.backend.auth import auth_bp
+from src.backend.denuncias import denuncias_bp
+from src.backend.instituicoes import instituicoes_bp
+from src.backend.tipos_golpe import tipos_golpe_bp
 
 load_dotenv()
 
