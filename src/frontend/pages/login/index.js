@@ -1,3 +1,6 @@
+import { fetchApi } from "../../utils/api.js";
+import { aplicarMascaraTelefone } from "../../utils/masks.js";
+
 export default () => {
   const containerLogin = document.createElement("div");
 
@@ -112,7 +115,7 @@ export default () => {
     }
 
     try {
-      const response = await fetch("https://truecall.onrender.com/api/auth/login", {
+      const response = await fetchApi("auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,43 +147,8 @@ export default () => {
   const btnConsultar = containerLogin.querySelector("#btnConsultar");
   const resultadoConsulta = containerLogin.querySelector("#resultadoConsulta");
 
-  // Máscara automática para o telefone de consulta
   inputConsulta.addEventListener("input", (e) => {
-    let valor = e.target.value.replace(/\D/g, "");
-
-    if (valor.startsWith("0800")) {
-      if (valor.length > 11) valor = valor.slice(0, 11);
-      if (valor.length <= 4) {
-        e.target.value = valor;
-      } else if (valor.length <= 7) {
-        e.target.value = `${valor.slice(0, 4)} ${valor.slice(4)}`;
-      } else {
-        e.target.value = `${valor.slice(0, 4)} ${valor.slice(4, 7)} ${valor.slice(7)}`;
-      }
-    } else if (valor.startsWith("4004") || valor.startsWith("3003")) {
-      if (valor.length > 8) valor = valor.slice(0, 8);
-      if (valor.length <= 4) {
-        e.target.value = valor;
-      } else {
-        e.target.value = `${valor.slice(0, 4)}-${valor.slice(4)}`;
-      }
-    } else {
-      const ehCelular = valor.length >= 3 && valor[2] === "9";
-      const limite = ehCelular ? 11 : 10;
-      if (valor.length > limite) valor = valor.slice(0, limite);
-
-      if (valor.length === 0) {
-        e.target.value = "";
-      } else if (valor.length <= 2) {
-        e.target.value = `(${valor}`;
-      } else if (valor.length <= 6) {
-        e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
-      } else if (valor.length <= 10) {
-        e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
-      } else {
-        e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
-      }
-    }
+    e.target.value = aplicarMascaraTelefone(e.target.value);
   });
 
   function obterDicasDefesa(tipos) {
@@ -273,7 +241,7 @@ export default () => {
       btnConsultar.disabled = true;
       btnConsultar.innerText = "Verificando...";
 
-      const response = await fetch(`https://truecall.onrender.com/api/denuncias/publico/verificar/${telefoneLimpo}`);
+      const response = await fetchApi(`denuncias/publico/verificar/${telefoneLimpo}`);
       const data = await response.json();
 
       resultadoConsulta.style.display = "block";

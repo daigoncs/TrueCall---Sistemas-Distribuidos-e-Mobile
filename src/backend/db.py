@@ -4,6 +4,8 @@ import logging
 
 from flask import g, current_app
 
+from src.backend.utils import ensure_column_exists
+
 logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -31,19 +33,8 @@ def init_db(app=None):
     db = sqlite3.connect(db_path)
     db.execute("PRAGMA foreign_keys = ON")
 
-    # Garante que a coluna tipo_golpe_personalizado existe na tabela denuncia
-    try:
-        db.execute("ALTER TABLE denuncia ADD COLUMN tipo_golpe_personalizado TEXT")
-        db.commit()
-    except sqlite3.OperationalError:
-        pass
-
-    # Garante que a coluna estado existe na tabela denuncia
-    try:
-        db.execute("ALTER TABLE denuncia ADD COLUMN estado TEXT")
-        db.commit()
-    except sqlite3.OperationalError:
-        pass
+    ensure_column_exists(db, "denuncia", "tipo_golpe_personalizado")
+    ensure_column_exists(db, "denuncia", "estado")
 
     # Garante que a tabela de votos existe mesmo em bancos já criados
     db.execute("""

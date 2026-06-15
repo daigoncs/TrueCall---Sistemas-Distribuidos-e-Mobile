@@ -1,3 +1,5 @@
+import { fetchApi } from "../../utils/api.js";
+
 export default () => {
   const container = document.createElement("div");
 
@@ -75,16 +77,13 @@ export default () => {
     }
 
     try {
-      const response = await fetch(
-        "https://truecall.onrender.com/api/auth/registrar",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ nome, email, senha }),
+      const response = await fetchApi("auth/registrar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ nome, email, senha }),
+      });
 
       const data = await response.json();
 

@@ -1,25 +1,8 @@
-// ==========================================
-// FUNÇÕES AUXILIARES (Puras e Isoladas)
-// ==========================================
-
-const formatarTelefone = (valor) => {
-  let num = valor.replace(/\D/g, "");
-  const ehCelular = num.length >= 3 && num[2] === "9";
-  const limite = ehCelular ? 11 : 10;
-
-  if (num.length > limite) num = num.slice(0, limite);
-  if (num.length === 0) return "";
-  if (num.length <= 2) return `(${num}`;
-  if (num.length <= 6) return `(${num.slice(0, 2)}) ${num.slice(2)}`;
-  if (num.length <= 10)
-    return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
-  return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
-};
-
-const obterTamanhoEsperadoTelefone = (telefoneLimpo) => {
-  const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
-  return { ehCelular, tamanhoEsperado: ehCelular ? 11 : 10 };
-};
+import { fetchApi, fetchAuthApi } from "../../utils/api.js";
+import { aplicarMascaraTelefone, obterTamanhoEsperadoTelefone } from "../../utils/masks.js";
+import { requireAuth } from "../../utils/auth.js";
+import { gerarOptionsEstados } from "../../utils/estados.js";
+import { popularSelect, monitorarSelecaoOutro } from "../../utils/dom.js";
 
 export default () => {
   const container = document.createElement("div");
@@ -59,34 +42,7 @@ export default () => {
             <label for="estado">Estado (UF)</label>
             <div class="select-wrapper">
               <select id="estado" class="input" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 8px; box-sizing: border-box;">
-                <option value="">Selecionar estado...</option>
-                <option value="AC">Acre</option>
-                <option value="AL">Alagoas</option>
-                <option value="AP">Amapá</option>
-                <option value="AM">Amazonas</option>
-                <option value="BA">Bahia</option>
-                <option value="CE">Ceará</option>
-                <option value="DF">Distrito Federal</option>
-                <option value="ES">Espírito Santo</option>
-                <option value="GO">Goiás</option>
-                <option value="MA">Maranhão</option>
-                <option value="MT">Mato Grosso</option>
-                <option value="MS">Mato Grosso do Sul</option>
-                <option value="MG">Minas Gerais</option>
-                <option value="PA">Pará</option>
-                <option value="PB">Paraíba</option>
-                <option value="PR">Paraná</option>
-                <option value="PE">Pernambuco</option>
-                <option value="PI">Piauí</option>
-                <option value="RJ">Rio de Janeiro</option>
-                <option value="RN">Rio Grande do Norte</option>
-                <option value="RS">Rio Grande do Sul</option>
-                <option value="RO">Rondônia</option>
-                <option value="RR">Roraima</option>
-                <option value="SC">Santa Catarina</option>
-                <option value="SP">São Paulo</option>
-                <option value="SE">Sergipe</option>
-                <option value="TO">Tocantins</option>
+                ${gerarOptionsEstados()}
               </select>
             </div>
           </div>
@@ -116,11 +72,8 @@ export default () => {
     </div>
   `;
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.hash = "#login";
-    return container;
-  }
+  const token = requireAuth();
+  if (!token) return container;
 
   const elements = {
     msg: container.querySelector("#message"),
@@ -134,46 +87,22 @@ export default () => {
   };
 
   elements.inputTel.addEventListener("input", (e) => {
-    e.target.value = formatarTelefone(e.target.value);
+    e.target.value = aplicarMascaraTelefone(e.target.value);
   });
 
   elements.inputDesc.addEventListener("input", (e) => {
     elements.charCount.textContent = `${e.target.value.length}/300`;
   });
 
-  const monitorarSelecaoOutro = (selectElement, wrapperId) => {
-    selectElement.addEventListener("change", () => {
-      const textoSelecionado =
-        selectElement.options[selectElement.selectedIndex]?.text.toLowerCase();
-      container.querySelector(wrapperId).style.display =
-        textoSelecionado === "outro" ? "block" : "none";
-    });
-  };
-  monitorarSelecaoOutro(elements.selInst, "#wrapperPersonalizada");
-  monitorarSelecaoOutro(elements.selTipo, "#wrapperTipoPersonalizado");
+  monitorarSelecaoOutro(container, elements.selInst, "#wrapperPersonalizada");
+  monitorarSelecaoOutro(container, elements.selTipo, "#wrapperTipoPersonalizado");
 
   container.querySelectorAll("#btnVoltar, #btnVoltar2").forEach((btn) => {
     btn.addEventListener("click", () => (window.location.hash = "#dashboard"));
   });
 
-  const buscarDadosApi = async (endpoint, selectElement) => {
-    try {
-      const response = await fetch(
-        `https://truecall.onrender.com/api/${endpoint}`,
-      );
-      const dados = await response.json();
-      selectElement.innerHTML =
-        `<option value="">Selecionar...</option>` +
-        dados
-          .map((item) => `<option value="${item.id}">${item.nome}</option>`)
-          .join("");
-    } catch (err) {
-      console.error(`Erro ao carregar ${endpoint}:`, err);
-    }
-  };
-
-  buscarDadosApi("instituicoes", elements.selInst);
-  buscarDadosApi("tipos-golpe", elements.selTipo);
+  popularSelect("instituicoes", elements.selInst);
+  popularSelect("tipos-golpe", elements.selTipo);
 
   container.querySelector("#btnSalvar").addEventListener("click", async () => {
     elements.msg.className = "denuncia-msg";
@@ -207,17 +136,11 @@ export default () => {
         estado: container.querySelector("#estado").value,
       };
 
-      const response = await fetch(
-        "https://truecall.onrender.com/api/denuncias",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        },
-      );
+      const response = await fetchAuthApi("denuncias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.erro);
