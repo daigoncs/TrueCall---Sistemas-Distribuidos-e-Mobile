@@ -2,7 +2,7 @@ export default () => {
   const containerLogin = document.createElement("div");
 
   const templateLogin = `
-    <div class="login-page-container">
+    <div class="page-container">
       
       <div class="container dynamic-box">
 

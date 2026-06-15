@@ -2,8 +2,8 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-  
-    <form class="container">
+    <div class="page-container">
+      <form class="container">
 
         <div class="form-switch">
         <a href="#login">Entrar</a>
@@ -41,7 +41,8 @@ export default () => {
       <p id="message" class="message"></p>
 
     </form>
-  `;
+  </div>
+`;
 
   const btn = container.querySelector("#btnCadastrar");
   const msg = container.querySelector("#message");

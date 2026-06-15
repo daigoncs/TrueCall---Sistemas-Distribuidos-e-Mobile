@@ -144,7 +144,7 @@ export default () => {
     const progresso = (indexAtual / total) * 100;
 
     container.innerHTML = `
-      <div class="quiz-page">
+      <div class="page-container">
         <nav class="topbar">
           <span class="topbar-brand">True<span>Call</span></span>
           <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>

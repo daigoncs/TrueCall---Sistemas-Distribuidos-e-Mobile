@@ -2,7 +2,7 @@ export default () => {
   const containerForgot = document.createElement("div");
 
   const templateForgot = `
-    <div class="login-page-container">
+    <div class="page-container">
       
       <div class="container dynamic-box">
         <h2>Recuperar Senha</h2>

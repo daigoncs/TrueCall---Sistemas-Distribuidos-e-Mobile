@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap");
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'DM Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "DM Sans", sans-serif;
 }
 
 *,
@@ -15,7 +15,7 @@
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   background-color: var(--bg);
   color: var(--black);
   min-height: 100vh;
@@ -25,16 +25,26 @@ body {
   padding: 1.5rem;
 }
 
+.page-container {
+  width: 100%;
+  max-width: 1200px;      /* Define a largura máxima padrão para o site todo */
+  margin: 0 auto;         /* Centraliza o bloco na horizontal */
+  padding: 2rem 1rem;     /* Espaçamento interno padrão (topo/baixo e laterais) */
+  box-sizing: border-box;
+}
+
 .topbar {
   background: #111111;
   padding: 0 2rem;
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   position: sticky;
   top: 0;
   z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .topbar-menu {
@@ -56,14 +66,12 @@ body {
   color: #e8571a;
 }
 
-/* NOVA CLASSE: Força os botões da barra do topo a ficarem sempre em linha */
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 1rem; /* Espaço horizontal entre os botões */
+  gap: 1rem; 
 }
 
-/* ── Hambúrguer ── */
 .topbar-hamburguer {
   display: none;
   flex-direction: column;
@@ -116,7 +124,7 @@ body {
   animation: fadeIn 0.15s ease;
 }
 
-.topbar-dropdown.aberto {
+.topbar-dropdown.active {
   display: flex;
 }
 
@@ -181,7 +189,7 @@ body {
 }
 
 .dashboard-header h1 {
-  font-family: 'Sora', sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: #111111;
@@ -191,4 +199,3 @@ body {
   display: flex;
   gap: 0.75rem;
 }
-

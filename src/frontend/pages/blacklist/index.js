@@ -2,14 +2,15 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <div class="dashboard-page">
+    <div class="page-container">
 
       <nav class="topbar">
         <span class="topbar-brand">True<span>Call</span></span>
-        <div class="topbar-menu">
-          <button id="btnIrQuiz" class="btn-logout btn-secondary">Simulador de Golpes</button>
+
+        <div class="topbar-menuButtons">
           <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
         </div>
+
       </nav>
 
       <main class="dashboard-main">
@@ -35,10 +36,6 @@ export default () => {
     window.location.hash = "#login";
     return container;
   }
-
-  container.querySelector("#btnIrQuiz").addEventListener("click", () => {
-    window.location.hash = "#quiz";
-  });
 
   async function carregarListaNegra() {
     const feed = container.querySelector("#feedBlacklist");

@@ -1,4 +1,4 @@
-.dashboard-page {
+.page-container {
   width: calc(100% + 3rem); /* cancela o padding: 1.5rem do body em ambos os lados */
   margin: -1.5rem;
   min-height: 100vh;

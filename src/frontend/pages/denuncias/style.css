@@ -1,31 +1,59 @@
 .denuncia-page {
-  width: calc(100% + 3rem);
-  margin: -1.5rem;
   min-height: 100vh;
   background: #f7f7f8;
   font-family: "DM Sans", sans-serif;
 }
 
-@media (min-width: 900px) {
-  .denuncia-main {
-    max-width: 100%;
-    padding: 2.5rem 3rem 4rem;
-  }
-
-  .denuncia-card {
-    max-width: 720px;
-  }
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-@media (min-width: 1280px) {
-  .denuncia-main {
-    padding: 2.5rem 5rem 4rem;
-  }
+.denuncia-main {
+  padding: 1.5rem 1rem 3rem; /* Espaçamento confortável em telas pequenas */
+  box-sizing: border-box;
+}
 
-  .denuncia-card {
-    max-width: 860px;
-  }
-} 
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #111111;
+  color: #ffffff;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.topbar-brand {
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.topbar-brand span {
+  color: #e8571a;
+}
+
+.topbar-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #111111;
+  padding: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 100;
+  box-sizing: border-box;
+}
+.topbar-dropdown.active {
+  display: flex;
+}
 
 .denuncia-header {
   display: flex;
@@ -34,35 +62,12 @@
   margin-bottom: 2rem;
 }
 
-.btn-voltar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: #ffffff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #111111;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-  text-decoration: none;
-}
-
-.btn-voltar:hover {
-  background: #f5f5f5;
-  border-color: #c0c0c0;
-}
-
 .denuncia-header h1 {
   font-family: "Sora", sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: #111111;
+  margin: 0;
 }
 
 .btn-voltar {
@@ -78,28 +83,19 @@
   color: #111111;
   font-size: 1.1rem;
   flex-shrink: 0;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
   text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .btn-voltar:hover {
   background: #f5f5f5;
   border-color: #c0c0c0;
-}
-
-.denuncia-header h1 {
-  font-family: "Sora", sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #111111;
 }
 
 .denuncia-card {
   background: #ffffff;
   border-radius: 16px;
-  padding: 2rem 1.75rem;
+  padding: 1.5rem 1.25rem; /* Ajustado compacto para celular */
   border: 1.5px solid #ebebeb;
 }
 
@@ -126,13 +122,10 @@
   color: #111111;
   outline: none;
   margin-bottom: 1.25rem;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background 0.2s;
+  box-sizing: border-box;
   appearance: none;
   -webkit-appearance: none;
-  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .denuncia-card .input::placeholder,
@@ -155,6 +148,7 @@
   background: #ffffff;
 }
 
+/* Customização das setas de Select */
 .select-wrapper {
   position: relative;
 }
@@ -162,9 +156,6 @@
 .select-wrapper select {
   cursor: pointer;
   padding-right: 2.5rem;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
 }
 
 .select-wrapper::after {
@@ -179,13 +170,13 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 6px solid #6b6b6b;
-  margin-bottom: 1.25rem;
 }
 
+/* Layout mobile padrão empilha tudo em uma coluna */
 .input-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1rem;
+  grid-template-columns: 1fr;
+  gap: 0;
 }
 
 .denuncia-card textarea {
@@ -197,7 +188,6 @@
 .denuncia-msg {
   font-size: 0.85rem;
   border-radius: 8px;
-  min-height: 0;
   transition: all 0.2s;
   margin-bottom: 0;
 }
@@ -219,6 +209,22 @@
   border: 1px solid #fecaca;
 }
 
+.btn-logout {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  width: 100%; /* Botões mobile ocupam largura total */
+}
+
+.btn-secondary {
+  background: #222222;
+  color: #ffffff;
+  border: 1px solid #444444;
+}
+
 .btn-registrar {
   display: flex;
   align-items: center;
@@ -235,20 +241,12 @@
   border-radius: 10px;
   cursor: pointer;
   margin-bottom: 0.75rem;
-  transition:
-    background 0.2s,
-    transform 0.15s;
   letter-spacing: 0.01em;
+  transition: background 0.2s, transform 0.15s;
 }
 
-.btn-registrar:hover {
-  background: #cf4c17;
-}
-
-.btn-registrar:active {
-  transform: scale(0.98);
-}
-
+.btn-registrar:hover { background: #cf4c17; }
+.btn-registrar:active { transform: scale(0.98); }
 .btn-registrar:disabled {
   background: #f0b49a;
   cursor: not-allowed;
@@ -269,10 +267,7 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 10px;
   cursor: pointer;
-  transition:
-    border-color 0.2s,
-    color 0.2s,
-    background 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
 .btn-cancelar:hover {
@@ -281,17 +276,34 @@
   background: #f9f9f9;
 }
 
-@media (max-width: 480px) {
+@media (min-width: 768px) {
   .denuncia-main {
-    padding: 1.5rem 1rem 3rem;
+    padding: 2.5rem 2rem 4rem;
   }
 
   .denuncia-card {
-    padding: 1.5rem 1.25rem;
+    padding: 2rem 1.75rem;
+    max-width: 720px;
   }
 
   .input-row {
-    grid-template-columns: 1fr;
-    gap: 0;
+    grid-template-columns: 1fr 1fr; /* Divide os campos de seleção em 2 colunas */
+    gap: 0 1rem;
+  }
+
+
+  .btn-logout {
+    width: auto;
+  }
+}
+
+/* Telas Grandes (Monitores Desktop padrão) */
+@media (min-width: 1280px) {
+  .denuncia-main {
+    padding: 2.5rem 5rem 4rem;
+  }
+
+  .denuncia-card {
+    max-width: 860px; 
   }
 }

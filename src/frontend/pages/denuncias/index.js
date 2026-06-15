@@ -1,43 +1,44 @@
+// ==========================================
+// FUNÇÕES AUXILIARES (Puras e Isoladas)
+// ==========================================
+
+const formatarTelefone = (valor) => {
+  let num = valor.replace(/\D/g, "");
+  const ehCelular = num.length >= 3 && num[2] === "9";
+  const limite = ehCelular ? 11 : 10;
+
+  if (num.length > limite) num = num.slice(0, limite);
+  if (num.length === 0) return "";
+  if (num.length <= 2) return `(${num}`;
+  if (num.length <= 6) return `(${num.slice(0, 2)}) ${num.slice(2)}`;
+  if (num.length <= 10)
+    return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
+  return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
+};
+
+const obterTamanhoEsperadoTelefone = (telefoneLimpo) => {
+  const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
+  return { ehCelular, tamanhoEsperado: ehCelular ? 11 : 10 };
+};
+
 export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <div class="denuncia-page">
+    <div class="page-container">
       <nav class="topbar">
-      <span class="topbar-brand">True<span>Call</span></span>
-
-  <!-- Menu normal (desktop) -->
-  <div class="topbar-menu">
-       <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
-  </div>
-
-  <!-- Hambúrguer (mobile) -->
-  <button class="topbar-hamburguer" id="btnHamburguer" aria-label="Menu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <div class="topbar-dropdown" id="topbarDropdown">
-    <button id="btnIrBlacklistMobile" class="btn-logout btn-secondary">Blacklist de Golpes</button>
-    <button id="btnIrQuizMobile" class="btn-logout btn-secondary">Simulador de Golpes</button>
-    <button id="logoutMobile" class="btn-logout">Sair</button>
-  </div>
-</nav>
+        <span class="topbar-brand">True<span>Call</span></span>
+          <button id="btnVoltar" class="btn-logout btn-secondary">← Voltar</button>
+      </nav>
 
       <main class="denuncia-main">
-
         <div class="denuncia-header">
           <h1>Registrar denúncia</h1>
         </div>
 
         <div class="denuncia-card">
-
           <label for="telefone">Telefone suspeito</label>
-          <input
-            id="telefone"
-            class="input"
-            placeholder="+55 11 99999-9999"
-          />
+          <input id="telefone" class="input" placeholder="+55 11 99999-9999" />
 
           <div class="input-row">
             <div>
@@ -92,140 +93,100 @@ export default () => {
 
           <div id="wrapperPersonalizada" style="display: none;">
             <label for="instituicaoPersonalizada">Qual instituição?</label>
-            <input
-              id="instituicaoPersonalizada"
-              class="input"
-              placeholder="Ex: Banco XYZ"
-            />
+            <input id="instituicaoPersonalizada" class="input" placeholder="Ex: Banco XYZ" />
           </div>
 
           <div id="wrapperTipoPersonalizado" style="display: none;">
             <label for="tipoPersonalizado">Qual tipo de golpe?</label>
-            <input
-              id="tipoPersonalizado"
-              class="input"
-              placeholder="Ex: Golpe do Motoboy"
-            />
+            <input id="tipoPersonalizado" class="input" placeholder="Ex: Golpe do Motoboy" />
           </div>
 
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <label for="descricao" style="margin-bottom: 0;">Descrição</label>
             <span id="charCount" style="font-size: 0.75rem; color: #6b6b6b; font-family: 'DM Sans', sans-serif;">0/300</span>
           </div>
-          <textarea
-            id="descricao"
-            placeholder="Descreva o que aconteceu na ligação..."
-            maxlength="300"
-            style="margin-top: 0.4rem;"
-          ></textarea>
+          <textarea id="descricao" placeholder="Descreva o que aconteceu na ligação..." maxlength="300" style="margin-top: 0.4rem;"></textarea>
 
           <p id="message" class="denuncia-msg"></p>
 
-          <button id="btnSalvar" class="btn-registrar">
-            Registrar denúncia
-          </button>
-
-          <button id="btnVoltar2" class="btn-cancelar">
-            Cancelar
-          </button>
-
+          <button id="btnSalvar" class="btn-registrar">Registrar denúncia</button>
+          <button id="btnVoltar2" class="btn-cancelar">Cancelar</button>
         </div>
       </main>
     </div>
   `;
 
   const token = localStorage.getItem("token");
-  const msg = container.querySelector("#message");
-  const selInst = container.querySelector("#instituicao");
-  const inputTel = container.querySelector("#telefone");
+  if (!token) {
+    window.location.hash = "#login";
+    return container;
+  }
 
-  // Máscara adaptativa: celular (9 dígitos) vs. fixo (8 dígitos)
-  // Regra: se o 3º dígito (1º após o DDD) for '9' → celular → 11 dígitos total
-  //        se não for '9'                          → fixo   → 10 dígitos total
-  inputTel.addEventListener("input", (e) => {
-    let valor = e.target.value.replace(/\D/g, "");
+  const elements = {
+    msg: container.querySelector("#message"),
+    selInst: container.querySelector("#instituicao"),
+    selTipo: container.querySelector("#tipoGolpe"),
+    inputTel: container.querySelector("#telefone"),
+    inputDesc: container.querySelector("#descricao"),
+    charCount: container.querySelector("#charCount"),
+    btnHamburguer: container.querySelector("#btnHamburguer"),
+    menuItens: container.querySelector("#topbarDropdown"),
+  };
 
-    // Determina o limite: só decide quando já temos DDD + 1 dígito local
-    const ehCelular = valor.length >= 3 && valor[2] === "9";
-    const limite = ehCelular ? 11 : 10;
-    if (valor.length > limite) valor = valor.slice(0, limite);
+  elements.inputTel.addEventListener("input", (e) => {
+    e.target.value = formatarTelefone(e.target.value);
+  });
 
-    if (valor.length === 0) {
-      e.target.value = "";
-    } else if (valor.length <= 2) {
-      e.target.value = `(${valor}`;
-    } else if (valor.length <= 6) {
-      e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
-    } else if (valor.length <= 10) {
-      // Fixo: (11) 3333-4444  |  Celular ainda construindo: (11) 9999-4444
-      e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
-    } else {
-      // Celular completo: (11) 99999-4444
-      e.target.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
+  elements.inputDesc.addEventListener("input", (e) => {
+    elements.charCount.textContent = `${e.target.value.length}/300`;
+  });
+
+  const monitorarSelecaoOutro = (selectElement, wrapperId) => {
+    selectElement.addEventListener("change", () => {
+      const textoSelecionado =
+        selectElement.options[selectElement.selectedIndex]?.text.toLowerCase();
+      container.querySelector(wrapperId).style.display =
+        textoSelecionado === "outro" ? "block" : "none";
+    });
+  };
+  monitorarSelecaoOutro(elements.selInst, "#wrapperPersonalizada");
+  monitorarSelecaoOutro(elements.selTipo, "#wrapperTipoPersonalizado");
+
+  container.querySelectorAll("#btnVoltar, #btnVoltar2").forEach((btn) => {
+    btn.addEventListener("click", () => (window.location.hash = "#dashboard"));
+  });
+
+  const buscarDadosApi = async (endpoint, selectElement) => {
+    try {
+      const response = await fetch(
+        `https://truecall.onrender.com/api/${endpoint}`,
+      );
+      const dados = await response.json();
+      selectElement.innerHTML =
+        `<option value="">Selecionar...</option>` +
+        dados
+          .map((item) => `<option value="${item.id}">${item.nome}</option>`)
+          .join("");
+    } catch (err) {
+      console.error(`Erro ao carregar ${endpoint}:`, err);
     }
-  });
+  };
 
-  const inputDesc = container.querySelector("#descricao");
-  const charCount = container.querySelector("#charCount");
-  inputDesc.addEventListener("input", (e) => {
-    charCount.textContent = `${e.target.value.length}/300`;
-  });
-
-  // Mostra campo personalizada quando "Outro" for selecionado
-  selInst.addEventListener("change", () => {
-    const isOutro =
-      selInst.options[selInst.selectedIndex]?.text.toLowerCase() === "outro";
-    container.querySelector("#wrapperPersonalizada").style.display = isOutro
-      ? "block"
-      : "none";
-  });
-
-  const selTipo = container.querySelector("#tipoGolpe");
-  selTipo.addEventListener("change", () => {
-    const isOutro =
-      selTipo.options[selTipo.selectedIndex]?.text.toLowerCase() === "outro";
-    container.querySelector("#wrapperTipoPersonalizado").style.display = isOutro
-      ? "block"
-      : "none";
-  });
-
-  async function carregarInstituicoes() {
-    const response = await fetch(
-      "https://truecall.onrender.com/api/instituicoes",
-    );
-    const dados = await response.json();
-    selInst.innerHTML =
-      `<option value="">Selecionar...</option>` +
-      dados.map((i) => `<option value="${i.id}">${i.nome}</option>`).join("");
-  }
-
-  async function carregarTipos() {
-    const response = await fetch(
-      "https://truecall.onrender.com/api/tipos-golpe",
-    );
-    const dados = await response.json();
-    selTipo.innerHTML =
-      `<option value="">Selecionar...</option>` +
-      dados.map((t) => `<option value="${t.id}">${t.nome}</option>`).join("");
-  }
-
-  carregarInstituicoes();
-  carregarTipos();
+  buscarDadosApi("instituicoes", elements.selInst);
+  buscarDadosApi("tipos-golpe", elements.selTipo);
 
   container.querySelector("#btnSalvar").addEventListener("click", async () => {
-    msg.className = "denuncia-msg";
-    msg.innerHTML = "";
+    elements.msg.className = "denuncia-msg";
+    elements.msg.innerHTML = "";
 
-    const telefoneVal = inputTel.value;
+    const telefoneVal = elements.inputTel.value;
     const telefoneLimpo = telefoneVal.replace(/\D/g, "");
-
-    // Valida: celular = 11 dígitos (3º dígito é '9'); fixo = 10 dígitos
-    const ehCelular = telefoneLimpo.length >= 3 && telefoneLimpo[2] === "9";
-    const tamanhoEsperado = ehCelular ? 11 : 10;
+    const { ehCelular, tamanhoEsperado } =
+      obterTamanhoEsperadoTelefone(telefoneLimpo);
 
     if (telefoneLimpo.length !== tamanhoEsperado) {
-      msg.className = "denuncia-msg error";
-      msg.innerHTML =
+      elements.msg.className = "denuncia-msg error";
+      elements.msg.innerHTML =
         ehCelular || telefoneLimpo.length < 3
           ? "Celulares precisam de DDD + 9 dígitos. Ex: (11) 99999-9999"
           : "Fixos precisam de DDD + 8 dígitos. Ex: (11) 3333-4444";
@@ -233,6 +194,19 @@ export default () => {
     }
 
     try {
+      const payload = {
+        telefone: telefoneVal,
+        descricao: elements.inputDesc.value,
+        instituicao_id: elements.selInst.value,
+        tipo_golpe_id: elements.selTipo.value,
+        instituicao_personalizada: container.querySelector(
+          "#instituicaoPersonalizada",
+        ).value,
+        tipo_golpe_personalizado:
+          container.querySelector("#tipoPersonalizado").value,
+        estado: container.querySelector("#estado").value,
+      };
+
       const response = await fetch(
         "https://truecall.onrender.com/api/denuncias",
         {
@@ -241,42 +215,21 @@ export default () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            telefone: telefoneVal,
-            descricao: container.querySelector("#descricao").value,
-            instituicao_id: container.querySelector("#instituicao").value,
-            tipo_golpe_id: container.querySelector("#tipoGolpe").value,
-            instituicao_personalizada: container.querySelector(
-              "#instituicaoPersonalizada",
-            ).value,
-            tipo_golpe_personalizado:
-              container.querySelector("#tipoPersonalizado").value,
-            estado: container.querySelector("#estado").value,
-          }),
+          body: JSON.stringify(payload),
         },
       );
 
       const data = await response.json();
-
       if (!response.ok) throw new Error(data.erro);
 
-      msg.className = "denuncia-msg success";
-      msg.innerHTML = "Denúncia registrada com sucesso!";
+      elements.msg.className = "denuncia-msg success";
+      elements.msg.innerHTML = "Denúncia registrada com sucesso!";
 
-      setTimeout(() => {
-        window.location.hash = "#dashboard";
-      }, 1500);
+      setTimeout(() => (window.location.hash = "#dashboard"), 1500);
     } catch (error) {
-      msg.className = "denuncia-msg error";
-      msg.innerHTML = error.message;
+      elements.msg.className = "denuncia-msg error";
+      elements.msg.innerHTML = error.message;
     }
-  });
-
-  // Dois botões de voltar (header e cancelar) fazem a mesma coisa
-  container.querySelectorAll("#btnVoltar, #btnVoltar2").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      window.location.hash = "#dashboard";
-    });
   });
 
   return container;

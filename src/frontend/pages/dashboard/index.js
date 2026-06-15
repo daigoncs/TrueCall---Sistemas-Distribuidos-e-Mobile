@@ -2,7 +2,7 @@ export default () => {
   const container = document.createElement("div");
 
   container.innerHTML = `
-    <div class="dashboard-page">
+    <div class="page-container">
 
 <nav class="topbar">
   <span class="topbar-brand">True<span>Call</span></span>
@@ -193,6 +193,80 @@ export default () => {
   if (!token) {
     window.location.hash = "#login";
     return container;
+  }
+
+  const btnNovaDenuncia = container.querySelector("#novaDenuncia");
+  const btnIrBlacklist = container.querySelector("#btnIrBlacklist");
+  const btnIrQuiz = container.querySelector("#btnIrQuiz");
+  const btnLogout = container.querySelector("#logout");
+
+  const btnHamburguer = container.querySelector("#btnHamburguer");
+  const menuItens = container.querySelector("#topbarDropdown");
+  const btnIrBlacklistMobile = container.querySelector("#btnIrBlacklistMobile");
+  const btnIrQuizMobile = container.querySelector("#btnIrQuizMobile");
+  const logoutMobile = container.querySelector("#logoutMobile");
+
+  const fecharMenu = () => {
+    if (menuItens && btnHamburguer) {
+      menuItens.classList.remove("active");
+      btnHamburguer.classList.remove("open");
+    }
+  };
+
+  if (btnNovaDenuncia) {
+    btnNovaDenuncia.addEventListener("click", () => {
+      window.location.hash = "#denuncia";
+    });
+  }
+
+  if (btnIrBlacklist) {
+    btnIrBlacklist.addEventListener("click", () => {
+      window.location.hash = "#blacklist";
+    });
+  }
+
+  if (btnIrQuiz) {
+    btnIrQuiz.addEventListener("click", () => {
+      window.location.hash = "#quiz";
+    });
+  }
+
+  if (btnLogout) {
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.hash = "#login";
+    });
+  }
+
+  if (btnHamburguer && menuItens) {
+    btnHamburguer.addEventListener("click", () => {
+      menuItens.classList.toggle("active");
+      btnHamburguer.classList.toggle("open");
+    });
+  }
+
+  if (btnIrBlacklistMobile) {
+    btnIrBlacklistMobile.addEventListener("click", () => {
+      window.location.hash = "#blacklist";
+      fecharMenu();
+    });
+  }
+
+  if (btnIrQuizMobile) {
+    btnIrQuizMobile.addEventListener("click", () => {
+      window.location.hash = "#quiz";
+      fecharMenu();
+    });
+  }
+
+  if (logoutMobile) {
+    logoutMobile.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.hash = "#login";
+      fecharMenu();
+    });
   }
 
   container.querySelector("#novaDenuncia").addEventListener("click", () => {
@@ -934,7 +1008,7 @@ export default () => {
         btn.addEventListener("click", async () => {
           if (!confirm("Excluir denúncia?")) return;
           await fetch(
-            `https://truecall.onrender.com/api/denuncias/${btn.dataset.id}`,
+            `https://truecall-sistemas-distribuidos-e-mobile-1.onrender.com/api/denuncias/${btn.dataset.id}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${token}` },
