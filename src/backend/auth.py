@@ -58,6 +58,12 @@ def registrar():
     email = dados["email"].strip().lower()
     senha = dados["senha"]
 
+    if len(nome) > 150:
+        return jsonify({"erro": "O nome deve ter no máximo 150 caracteres"}), 400
+
+    if len(email) > 254:
+        return jsonify({"erro": "O email deve ter no máximo 254 caracteres"}), 400
+
     if "@" not in email or "." not in email:
         return jsonify({"erro": "Formato de email inválido"}), 400
 

@@ -40,14 +40,17 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
-    # CORREÇÃO AGRESSIVA DE CORS: Força a liberação de todas as rotas e métodos (GET, POST, OPTIONS, etc)
+    allowed_origins = [
+        origin.strip()
+        for origin in os.environ.get("CORS_ORIGINS", "http://localhost:8000").split(",")
+        if origin.strip()
+    ]
     CORS(
-        app, 
-        resources={r"/*": {"origins": "*"}}, 
+        app,
+        resources={r"/api/*": {"origins": allowed_origins}},
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization"]
     )
-    app.config['CORS_HEADERS'] = 'Content-Type'
 
     limiter.init_app(app)
 
@@ -57,6 +60,7 @@ def create_app(test_config=None):
     app.register_blueprint(tipos_golpe_bp, url_prefix="/api/tipos-golpe")
 
     limiter.limit("10 per minute")(app.view_functions["auth.login"])
+    limiter.limit("5 per minute")(app.view_functions["auth.registrar"])
 
     app.teardown_appcontext(close_db)
 
@@ -80,4 +84,4 @@ def create_app(test_config=None):
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=os.environ.get("FLASK_DEBUG", "0") == "1", port=5000)

@@ -1,3 +1,15 @@
+import { API_URL } from "../../config.js";
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export default () => {
   const container = document.createElement("div");
 
@@ -323,8 +335,8 @@ export default () => {
     numerosFiltrados.forEach((item) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${item.instituicao}</td>
-        <td>${item.numero}</td>
+        <td>${escapeHtml(item.instituicao)}</td>
+        <td>${escapeHtml(item.numero)}</td>
         <td><button class="btn-remover-numero" data-id="${item.id}" title="Remover">&times;</button></td>
       `;
       tbody.appendChild(tr);
@@ -340,7 +352,7 @@ export default () => {
 
         try {
           const deleteResponse = await fetch(
-            `https://truecall.onrender.com/api/instituicoes/confiaveis/${id}`,
+            `${API_URL}/api/instituicoes/confiaveis/${id}`,
             {
               method: "DELETE",
               headers: { Authorization: `Bearer ${token}` },
@@ -367,7 +379,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "https://truecall.onrender.com/api/instituicoes/confiaveis",
+        "${API_URL}/api/instituicoes/confiaveis",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -485,7 +497,7 @@ export default () => {
 
       try {
         const response = await fetch(
-          "https://truecall.onrender.com/api/instituicoes/confiaveis",
+          "${API_URL}/api/instituicoes/confiaveis",
           {
             method: "POST",
             headers: {
@@ -539,7 +551,7 @@ export default () => {
     if (!instituicoesCarregadas) {
       try {
         const response = await fetch(
-          "https://truecall.onrender.com/api/instituicoes",
+          "${API_URL}/api/instituicoes",
         );
         const dados = await response.json();
         editInst.innerHTML =
@@ -556,7 +568,7 @@ export default () => {
     if (!tiposCarregados) {
       try {
         const response = await fetch(
-          "https://truecall.onrender.com/api/tipos-golpe",
+          "${API_URL}/api/tipos-golpe",
         );
         const dados = await response.json();
         editTipo.innerHTML =
@@ -663,7 +675,7 @@ export default () => {
 
       try {
         const response = await fetch(
-          `https://truecall.onrender.com/api/denuncias/${denunciaSendoEditadaId}`,
+          `${API_URL}/api/denuncias/${denunciaSendoEditadaId}`,
           {
             method: "PUT",
             headers: {
@@ -783,7 +795,7 @@ export default () => {
       li.className = "legenda-item";
       li.innerHTML = `
         <span class="legenda-cor" style="background:${CORES_PIZZA[i % CORES_PIZZA.length]}"></span>
-        <span class="legenda-nome">${golpe}</span>
+        <span class="legenda-nome">${escapeHtml(golpe)}</span>
         <span class="legenda-pct">${pct}%</span>
       `;
       legenda.appendChild(li);
@@ -794,7 +806,7 @@ export default () => {
     const pctTopo = ((qtdTopo / total) * 100).toFixed(0);
     banner.className = "grafico-banner";
     banner.innerHTML = `
-      <span><strong>${golpeTopo}</strong> representa <strong>${pctTopo}%</strong> das suas
+      <span><strong>${escapeHtml(golpeTopo)}</strong> representa <strong>${pctTopo}%</strong> das suas
       denúncias. Fique alerta a contatos simulando essa abordagem.</span>
     `;
   }
@@ -874,7 +886,7 @@ export default () => {
       li.className = "legenda-item";
       li.innerHTML = `
         <span class="legenda-cor" style="background:${CORES_REGIOES[regiao] || "#9ca3af"}"></span>
-        <span class="legenda-nome">${regiao}</span>
+        <span class="legenda-nome">${escapeHtml(regiao)}</span>
         <span class="legenda-pct">${pct}% (${qtd})</span>
       `;
       legenda.appendChild(li);
@@ -896,7 +908,7 @@ export default () => {
     try {
       // por_pagina=100 garante dados completos para o gráfico
       const response = await fetch(
-        "https://truecall.onrender.com/api/denuncias?por_pagina=100",
+        "${API_URL}/api/denuncias?por_pagina=100",
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -981,15 +993,15 @@ export default () => {
         lista.innerHTML += `
           <div class="cardDenuncia">
             <div class="card-header-linha">
-              <h3>${d.telefone}</h3>
-              <span class="badge-tipo">${nomeTipoGolpe}</span>
+              <h3>${escapeHtml(d.telefone)}</h3>
+              <span class="badge-tipo">${escapeHtml(nomeTipoGolpe)}</span>
             </div>
             <div class="card-meta">
-              <span><strong>Instituição:</strong> ${nomeInstituicao}</span>
-              <span><strong>Tipo:</strong> ${nomeTipoGolpe}</span>
-              ${d.estado ? `<span><strong>Estado:</strong> ${d.estado}</span>` : ""}
+              <span><strong>Instituição:</strong> ${escapeHtml(nomeInstituicao)}</span>
+              <span><strong>Tipo:</strong> ${escapeHtml(nomeTipoGolpe)}</span>
+              ${d.estado ? `<span><strong>Estado:</strong> ${escapeHtml(d.estado)}</span>` : ""}
             </div>
-            <p class="card-descricao">${d.descricao}</p>
+            <p class="card-descricao">${escapeHtml(d.descricao)}</p>
             <div class="card-acoes">
               <button class="btnEditar btn-editar-card" data-id="${d.id}">Editar</button>
               <button class="btnExcluir btn-excluir-card" data-id="${d.id}">Excluir</button>

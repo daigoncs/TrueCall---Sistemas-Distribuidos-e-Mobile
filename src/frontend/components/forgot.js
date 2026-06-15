@@ -1,3 +1,5 @@
+import { API_URL } from "../config.js";
+
 export default () => {
   const containerForgot = document.createElement("div");
 
@@ -57,7 +59,7 @@ export default () => {
 
       // Requisição para a sua API do Backend
       const response = await fetch(
-        "https://truecall.onrender.com/api/auth/forgot-password",
+        `${API_URL}/api/auth/forgot-password`,
         {
           method: "POST",
           headers: {

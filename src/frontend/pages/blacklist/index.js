@@ -1,3 +1,15 @@
+import { API_URL } from "../../config.js";
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export default () => {
   const container = document.createElement("div");
 
@@ -43,7 +55,7 @@ export default () => {
 
     try {
       const response = await fetch(
-        "https://truecall.onrender.com/api/denuncias/publico/recentes",
+        `${API_URL}/api/denuncias/publico/recentes`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -69,21 +81,21 @@ export default () => {
           minute: "2-digit",
         });
 
-        const badgeEstado = d.estado
-          ? `<span class="badge-estado">${d.estado}</span>`
+        const badgeEstadoSafe = d.estado
+          ? `<span class="badge-estado">${escapeHtml(d.estado)}</span>`
           : "";
 
         feed.innerHTML += `
           <div class="cardDenuncia">
             <div class="card-topo">
-              <h3>${d.telefone}</h3>
-              <span class="badge-tipo">${d.tipo_golpe}</span>
-              ${badgeEstado}
+              <h3>${escapeHtml(d.telefone)}</h3>
+              <span class="badge-tipo">${escapeHtml(d.tipo_golpe)}</span>
+              ${badgeEstadoSafe}
             </div>
-            <span class="card-data">${dataFormatada}</span>
+            <span class="card-data">${escapeHtml(dataFormatada)}</span>
             <div class="card-corpo">
-              <span class="card-instituicao"><strong>Instituição visada:</strong> ${d.instituicao || "Não informada"}</span>
-              <p class="card-descricao">${d.descricao}</p>
+              <span class="card-instituicao"><strong>Instituição visada:</strong> ${escapeHtml(d.instituicao) || "Não informada"}</span>
+              <p class="card-descricao">${escapeHtml(d.descricao)}</p>
             </div>
           </div>
         `;
