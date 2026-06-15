@@ -274,6 +274,10 @@ export default () => {
       btnConsultar.innerText = "Verificando...";
 
       const response = await fetch(`https://truecall.onrender.com/api/denuncias/publico/verificar/${telefoneLimpo}`);
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.erro || "Erro ao verificar número. Tente novamente.");
+      }
       const data = await response.json();
 
       resultadoConsulta.style.display = "block";
