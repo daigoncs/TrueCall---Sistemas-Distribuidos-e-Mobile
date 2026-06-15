@@ -585,6 +585,17 @@
     font-size: 1.25rem;
   }
 
+  .header-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .btn-exportar,
+  .btn-nova {
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+
   .cardDenuncia {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
