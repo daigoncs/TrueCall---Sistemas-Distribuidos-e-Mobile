@@ -375,13 +375,14 @@ export default () => {
 
       todosOsNumeros = await response.json();
 
-      const filtro = container.querySelector("#filtroInstituicao");
-      preencherFiltro(todosOsNumeros);
-      renderizarLinhas(todosOsNumeros, filtro.value);
-    } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: red;">Erro ao carregar números.</td></tr>`;
-      console.error(error);
-    }
+    const filtro = container.querySelector("#filtroInstituicao");
+    preencherFiltro(todosOsNumeros);
+    renderizarLinhas(todosOsNumeros, filtro);
+
+} catch (error) {
+    tbody.innerHTML = `<tr><td colspan="3">Erro ao carregar dados</td></tr>`;
+    console.error(error);
+}
   }
 
   container
