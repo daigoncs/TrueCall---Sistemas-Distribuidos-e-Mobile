@@ -27,9 +27,9 @@ body {
 
 .page-container {
   width: 100%;
-  max-width: 1200px;      /* Define a largura máxima padrão para o site todo */
-  margin: 0 auto;         /* Centraliza o bloco na horizontal */
-  padding: 2rem 1rem;     /* Espaçamento interno padrão (topo/baixo e laterais) */
+  max-width: 1200px; /* Define a largura máxima padrão para o site todo */
+  margin: 0 auto; /* Centraliza o bloco na horizontal */
+  padding: 2rem 1rem; /* Espaçamento interno padrão (topo/baixo e laterais) */
   box-sizing: border-box;
 }
 
@@ -69,7 +69,7 @@ body {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 1rem; 
+  gap: 1rem;
 }
 
 .topbar-hamburguer {
